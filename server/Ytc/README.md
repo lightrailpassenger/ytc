@@ -1,0 +1,7 @@
+# Ytc
+
+## Package
+```
+./gradlew distZip
+```
+
