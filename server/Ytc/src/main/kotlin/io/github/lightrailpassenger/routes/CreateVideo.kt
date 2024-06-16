@@ -25,6 +25,7 @@ import org.http4k.sse.SseResponse
 import io.github.lightrailpassenger.formats.errorResponseLens
 import io.github.lightrailpassenger.formats.ErrorResponse
 import io.github.lightrailpassenger.io.DownloadHelper
+import io.github.lightrailpassenger.io.DownloadRecord
 import io.github.lightrailpassenger.utils.ensureStorage
 
 data class Progress (
@@ -64,7 +65,8 @@ data class CreateVideoRequest(
 val payloadLens = Query.map(::CreateVideoRequest).required("url")
 
 fun generateCreateVideoHandler(
-    downloadHelper: DownloadHelper
+    downloadHelper: DownloadHelper,
+    downloadRecord: DownloadRecord
 ): (request: Request) -> SseResponse {
     return fun(request: Request): SseResponse {
         return SseResponse { sse: Sse ->
@@ -121,6 +123,12 @@ fun generateCreateVideoHandler(
                             }
                         }
                     }
+
+                    val files = currentDir.list()
+                    val firstWebM = files.find { it.toLowerCase().endsWith(".webm") }
+                    val name = if (firstWebM == null) "Untitled" else firstWebM.substring(0, firstWebM.length - 4)
+
+                    downloadRecord.insert(url, idFromTime, name)
                 } catch (ex: LensFailure) {
                     sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
                 } catch (ex: Throwable) {

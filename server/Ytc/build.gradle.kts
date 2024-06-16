@@ -20,6 +20,7 @@ val http4kVersion: String by project
 val http4kConnectVersion: String by project
 val junitVersion: String by project
 val kotlinVersion: String by project
+val exposedVersion: String by project
 
 application {
     mainClass = "io.github.lightrailpassenger.YtcKt"
@@ -57,6 +58,10 @@ dependencies {
     implementation("org.http4k:http4k-server-undertow:${http4kVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.exposed:exposed-core:${exposedVersion}")
+    implementation("org.jetbrains.exposed:exposed-dao:${exposedVersion}")
+    implementation("org.jetbrains.exposed:exposed-jdbc:${exposedVersion}")
+    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
     testImplementation("org.http4k:http4k-testing-approval:${http4kVersion}")
     testImplementation("org.http4k:http4k-testing-hamkrest:${http4kVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
