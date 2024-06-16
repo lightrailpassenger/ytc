@@ -5,8 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.Double
 import java.util.regex.Pattern
+
+import kotlin.concurrent.thread
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+
 import org.http4k.core.Request
 import org.http4k.lens.LensFailure
 import org.http4k.lens.Query
@@ -20,8 +28,8 @@ import io.github.lightrailpassenger.io.DownloadHelper
 import io.github.lightrailpassenger.utils.ensureStorage
 
 data class Progress (
-    val current: Int,
-    val total: Int,
+    val current: Number,
+    val total: Number,
 )
 
 fun parseProgress(line: String): Progress? {
@@ -35,8 +43,17 @@ fun parseProgress(line: String): Progress? {
 
         return Progress(current, total)
     } catch (_: Exception) {
-        // TODO: Can we parse percentage?
-        return null
+        val percentagePattern = Pattern.compile("\\[download\\]\\s*([0-9\\.]+)\\%\\sof")
+        val percentageMatcher = percentagePattern.matcher(line)
+        percentageMatcher.lookingAt()
+
+        try {
+            val percent = Double.parseDouble(percentageMatcher.group(1))
+
+            return Progress(percent, 100)
+        } catch (_: Exception) {
+            return null
+        }
     }
 }
 
@@ -50,63 +67,78 @@ fun generateCreateVideoHandler(
     downloadHelper: DownloadHelper
 ): (request: Request) -> SseResponse {
     return fun(request: Request): SseResponse {
-        try {
-            val query = payloadLens(request)
-            val storageDir = ensureStorage()
-            val idFromTime = System.currentTimeMillis().toString()
-            val currentDir = File(storageDir, idFromTime)
-            val hasCreated = currentDir.mkdir()
+        return SseResponse { sse: Sse ->
+            var process: Process? = null
+            val processContext = newSingleThreadContext("Download process")
 
-            if (!hasCreated) {
-                throw IOException("Cannot create directory $idFromTime")
-            }
+            thread {
+                try {
+                    val query = payloadLens(request)
+                    val storageDir = ensureStorage()
+                    val idFromTime = System.currentTimeMillis().toString()
+                    val currentDir = File(storageDir, idFromTime)
+                    val hasCreated = currentDir.mkdir()
 
-            val url = query.url
-            val location = currentDir.getPath()
-            val process = downloadHelper.fetchUrl(url, location)
+                    if (!hasCreated) {
+                        throw IOException("Cannot create directory $idFromTime")
+                    }
 
-            return SseResponse { sse: Sse ->
-                // FIXME: Does sse.onClose work?
-                process.getInputStream().use { st ->
-                    InputStreamReader(st).use { isr ->
-                        BufferedReader(isr).use { r ->
-                            var line: String? = null
-                            var lastProgress: Progress? = null
+                    val url = query.url
+                    val location = currentDir.getPath()
+                    var inputStream: InputStream? = null
 
-                            while (true) {
-                                line = r.readLine()
+                    runBlocking {
+                        withContext(processContext) {
+                            process = downloadHelper.fetchUrl(url, location)
 
-                                if (line != null) {
-                                    println(line)
-                                    val progress = parseProgress(line)
+                            inputStream = process.getInputStream()
+                        }
+                    }
 
-                                    if (progress != null && !progress.equals(lastProgress)) {
-                                        lastProgress = progress
+                    inputStream?.use { st ->
+                        InputStreamReader(st).use { isr ->
+                            BufferedReader(isr).use { r ->
+                                var line: String? = null
+                                var lastProgress: Progress? = null
 
-                                        val progressStr: String = ObjectMapper().writeValueAsString(progress)
-                                        sse.send(SseMessage.Data(progressStr))
+                                while (true) {
+                                    line = r.readLine()
+
+                                    if (line != null) {
+                                        println(line)
+                                        val progress = parseProgress(line)
+
+                                        if (progress != null && !progress.equals(lastProgress)) {
+                                            lastProgress = progress
+
+                                            val progressStr: String = ObjectMapper().writeValueAsString(progress)
+                                            sse.send(SseMessage.Data(progressStr))
+                                        }
+                                    } else {
+                                        break
                                     }
-                                } else {
-                                    sse.close()
-                                    break
                                 }
                             }
                         }
                     }
+                } catch (ex: LensFailure) {
+                    sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
+                } catch (ex: Throwable) {
+                    // TODO: Add logger
+                    println(ex)
+                    sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR"))))
+                } finally {
+                    sse.close()
                 }
             }
-        } catch (ex: LensFailure) {
-            return SseResponse { sse ->
-                sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
-                sse.close()
-            }
-        } catch (ex: Throwable) {
-            // TODO: Add logger
-            System.err.println(ex)
+            sse.onClose {
+                println("Closing connection")
 
-            return SseResponse { sse ->
-                sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR"))))
-                sse.close()
+                runBlocking {
+                    withContext(processContext) {
+                        process?.destroy()
+                    }
+                }
             }
         }
     }
