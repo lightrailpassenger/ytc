@@ -126,7 +126,11 @@ fun generateCreateVideoHandler(
 
                     val files = currentDir.list()
                     val firstWebM = files.find { it.toLowerCase().endsWith(".webm") }
-                    val name = if (firstWebM == null) "Untitled" else firstWebM.substring(0, firstWebM.length - 4)
+                    val lastSquareBracketOpenIndex = if (firstWebM == null) -1 else firstWebM.lastIndexOf("[")
+
+                    val name = if (firstWebM == null) "Untitled"
+                               else if (lastSquareBracketOpenIndex > 1) firstWebM.substring(0, lastSquareBracketOpenIndex - 1)
+                               else firstWebM.substring(0, firstWebM.length - 4)
 
                     downloadRecord.insert(url, idFromTime, name)
                 } catch (ex: LensFailure) {

@@ -4,6 +4,7 @@ import io.github.lightrailpassenger.io.DownloadHelper
 import io.github.lightrailpassenger.io.DownloadRecord
 import io.github.lightrailpassenger.routes.generateCreateVideoHandler
 import io.github.lightrailpassenger.routes.generateInitHandler
+import io.github.lightrailpassenger.routes.generateListVideosHandler
 import io.github.lightrailpassenger.utils.ensureDbDir
 
 import java.io.File
@@ -27,12 +28,14 @@ val downloadHelper = DownloadHelper()
 val downloadRecord = DownloadRecord(sqliteFile.getPath())
 val createVideo = generateCreateVideoHandler(downloadHelper, downloadRecord)
 val init = generateInitHandler(downloadRecord)
+val listVideos = generateListVideosHandler(downloadRecord)
 
 val http = routes(
     "/init" bind POST to init,
     "/ping" bind GET to {
         Response(OK).body("pong")
     },
+    "/downloaded-videos" bind GET to listVideos
 )
 
 val sse = sse(
