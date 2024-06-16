@@ -1,6 +1,7 @@
 package io.github.lightrailpassenger
 
-import io.github.lightrailpassenger.routes.createVideo
+import io.github.lightrailpassenger.io.DownloadHelper
+import io.github.lightrailpassenger.routes.generateCreateVideoHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
@@ -17,6 +18,9 @@ val http = routes(
         Response(OK).body("pong")
     },
 )
+
+val downloadHelper = DownloadHelper()
+val createVideo = generateCreateVideoHandler(downloadHelper)
 
 val sse = sse(
     "/videos" sseBind { request ->
