@@ -1,10 +1,10 @@
 import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 
-const VideoInfoContext = createContext([]);
+const VideoInfoContext = createContext({});
 
 function Provider(props) {
     const { children } = props;
-    const [value, setValue] = useState([]);
+    const [value, setValue] = useState();
     const context = useMemo(() => ({
         value,
         setValue,
@@ -18,7 +18,7 @@ function Provider(props) {
 }
 
 const useVideo = (createdAt) => {
-    const { value } = useContext(VideoInfoContext);
+    const { value = [] } = useContext(VideoInfoContext);
     const info = useMemo(() => {
         return value.find((item) => (item.createdAt === createdAt));
     }, [value, createdAt]);

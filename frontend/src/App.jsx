@@ -6,6 +6,7 @@ import { Global, css } from '@emotion/react';
 import VideoInfoContextProvider, { useVideoInfo } from './contexts/VideoInfo.jsx';
 
 import HomePage from './pages/HomePage.jsx';
+import CreatePage from './pages/CreatePage.jsx';
 import WatchPage from './pages/WatchPage.jsx';
 
 const router = createBrowserRouter([
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
     {
         path: '/watch/:createdAt',
         element: <WatchPage />,
+    },
+    {
+        path: '/create',
+        element: <CreatePage />,
     },
 ]);
 
@@ -50,6 +55,17 @@ function App() {
                     background-color: #faffae;
                     color: #a0937d;
                     font-family: 'Fira Sans';
+                }
+
+                input, button {
+                    color: #a0937d;
+                    font-family: 'Fira Sans';
+                }
+
+                input[type="submit"], button {
+                    background: white;
+                    border-radius: 5px;
+                    border: 1px solid #a0937d;
                 }
 
                 a, a:visited, a:hover, a:focus, a:active {

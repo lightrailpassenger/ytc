@@ -18,6 +18,8 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.then
 import org.http4k.core.Status.Companion.OK
+import org.http4k.sse.SseFilter
+import org.http4k.sse.then
 import org.http4k.routing.bind as bind
 import org.http4k.routing.routes
 import org.http4k.routing.sse
@@ -57,8 +59,14 @@ val responseHeaderFilter = Filter {
     }
 }
 
+val sseResponseFilter = SseFilter {
+    next -> {
+        request -> next(request).copy(headers = listOf("Access-Control-Allow-Origin" to "*"))
+    }
+}
+
 fun main() {
-    val server = PolyHandler(responseHeaderFilter.then(http), sse = sse).asServer(Undertow(9000)).start()
+    val server = PolyHandler(responseHeaderFilter.then(http), sse = sseResponseFilter.then(sse)).asServer(Undertow(9000)).start()
 
     println("Server started on " + server.port())
 }

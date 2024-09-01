@@ -125,7 +125,7 @@ fun generateCreateVideoHandler(
                     }
 
                     val files = currentDir.list()
-                    val firstWebM = files.find { it.toLowerCase().endsWith(".webm") }
+                    val firstWebM = files.find { it.toLowerCase().endsWith(".mp4") }
                     val lastSquareBracketOpenIndex = if (firstWebM == null) -1 else firstWebM.lastIndexOf("[")
 
                     val name = if (firstWebM == null) "Untitled"
@@ -133,6 +133,8 @@ fun generateCreateVideoHandler(
                                else firstWebM.substring(0, firstWebM.length - 4)
 
                     downloadRecord.insert(url, idFromTime, name)
+                    sse.send(SseMessage.Data("{\"end\":$idFromTime}"))
+                    Thread.sleep(1) // Why?
                 } catch (ex: LensFailure) {
                     sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
                 } catch (ex: Throwable) {

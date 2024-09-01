@@ -22,12 +22,22 @@ fun generateGetVideoHandler(): (request: Request) -> Response {
             val createdAt = request.path("createdAt")
             val dir = File(ensureStorage(), createdAt)
 
-            for (file in dir.listFiles()) {
-                if (file.isFile() && file.getName().endsWith(".webm")) {
-                    val inputStream = FileInputStream(file)
+            var fileNameLength: Int? = null
+            var file: File? = null
 
-                    return Response(OK).header("Content-Type", "video/webm").body(inputStream)
+            for (currentFile in dir.listFiles()) {
+                val fileName = currentFile.getName()
+
+                if (currentFile.isFile() && fileName.endsWith(".mp4") && (fileNameLength == null || fileName.length < fileNameLength)) {
+                    fileNameLength = fileName.length
+                    file = currentFile
                 }
+            }
+
+            if (file != null) {
+                val inputStream = FileInputStream(file)
+
+                return Response(OK).header("Content-Type", "video/mp4").body(inputStream)
             }
 
             return Response(NOT_FOUND).body(ObjectMapper().writeValueAsString(ErrorResponse("NOT_FOUND")))
