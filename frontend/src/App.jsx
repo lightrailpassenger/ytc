@@ -78,7 +78,7 @@ function App() {
     );
 }
 
-export default function() {
+export default function Wrapper() {
     return (
         <VideoInfoContextProvider>
             <App />

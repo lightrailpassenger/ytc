@@ -63,7 +63,7 @@ function CreatePage() {
                 setProgress(`${Math.floor(current / total * 100)}%`); // TODO
             }
         };
-    }, [url, history]);
+    }, [url, navigate]);
 
     useEffect(() => {
         return () => {
