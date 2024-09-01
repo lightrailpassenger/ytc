@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from '@emotion/styled';
+
+import { useVideoInfo } from '../contexts/VideoInfo.jsx';
 
 const H1 = styled.h1`
     font-size: 50px;
@@ -17,26 +18,7 @@ const Item = styled.div`
 `;
 
 function HomePage() {
-    const [downloadedList, setDownloadedList] = useState([]);
-
-    useEffect(() => {
-        const ac = new AbortController();
-        (async () => {
-            await fetch('http://localhost:9000/init', {
-                method: 'POST',
-                signal: ac.signal,
-            });
-
-            const res = await fetch('http://localhost:9000/downloaded-videos');
-            const { videos } = await res.json();
-
-            setDownloadedList(videos);
-        })();
-
-        return () => {
-            ac.abort();
-        };
-    }, []);
+    const [downloadedList] = useVideoInfo();
 
     return (
         <div>
