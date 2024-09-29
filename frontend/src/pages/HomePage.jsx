@@ -25,16 +25,16 @@ function HomePage() {
     return (
         <div>
             <H1>Videos</H1>
-            {downloadedList?.map(({ url, createdAt, name }) => (
-                <Item key={url}>
-                    <NavLink to={`/watch/${encodeURIComponent(createdAt)}`}>
-                        {name}
-                    </NavLink>
-                </Item>
-            ))}
             {downloadedList && <CreateItem key="create">
                 <NavLink to="/create">Create</NavLink>
             </CreateItem>}
+            {downloadedList?.map(({ url, createdAt, name }) => (
+                <Item key={url}>
+                <NavLink to={`/watch/${encodeURIComponent(createdAt)}`}>
+                {name}
+                </NavLink>
+                </Item>
+            ))}
         </div>
     );
 }
