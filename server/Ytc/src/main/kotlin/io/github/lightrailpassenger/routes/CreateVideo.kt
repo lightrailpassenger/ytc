@@ -7,6 +7,9 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.net.URL
+import java.net.MalformedURLException
+import java.net.URISyntaxException
 import java.lang.Double
 import java.util.regex.Pattern
 
@@ -85,62 +88,77 @@ fun generateCreateVideoHandler(
                         throw IOException("Cannot create directory $idFromTime")
                     }
 
-                    val url = query.url
-                    val location = currentDir.getPath()
-                    var inputStream: InputStream? = null
+                    // FIXME: Compare without protocol?
+                    val url = URL(query.url).toURI().normalize().toString()
+                    val existing = downloadRecord.selectByUrl(url)
 
-                    runBlocking {
-                        withContext(processContext) {
-                            process = downloadHelper.fetchUrl(url, location)
+                    if (existing != null) {
+                        val id = existing.createdAt
+                        sse.send(SseMessage.Data("{\"end\":$id}"))
+                    } else {
+                        val location = currentDir.getPath()
+                        var inputStream: InputStream? = null
 
-                            inputStream = process.getInputStream()
+                        runBlocking {
+                            withContext(processContext) {
+                                process = downloadHelper.fetchUrl(url, location)
+
+                                inputStream = process.getInputStream()
+                            }
                         }
-                    }
 
-                    inputStream?.use { st ->
-                        InputStreamReader(st).use { isr ->
-                            BufferedReader(isr).use { r ->
-                                var line: String? = null
-                                var lastProgress: Progress? = null
+                        inputStream?.use { st ->
+                            InputStreamReader(st).use { isr ->
+                                BufferedReader(isr).use { r ->
+                                    var line: String? = null
+                                    var lastProgress: Progress? = null
 
-                                while (true) {
-                                    line = r.readLine()
+                                    while (true) {
+                                        line = r.readLine()
 
-                                    if (line != null) {
-                                        println(line)
-                                        val progress = parseProgress(line)
+                                        if (line != null) {
+                                            println(line)
+                                            val progress = parseProgress(line)
 
-                                        if (progress != null && !progress.equals(lastProgress)) {
-                                            lastProgress = progress
+                                            if (progress != null && !progress.equals(lastProgress)) {
+                                                lastProgress = progress
 
-                                            val progressStr: String = ObjectMapper().writeValueAsString(progress)
-                                            sse.send(SseMessage.Data(progressStr))
+                                                val progressStr: String = ObjectMapper().writeValueAsString(progress)
+                                                sse.send(SseMessage.Data(progressStr))
+                                            }
+                                        } else {
+                                            break
                                         }
-                                    } else {
-                                        break
                                     }
                                 }
                             }
                         }
+
+                        val files = currentDir.list()
+                        val firstWebM = files.find { it.lowercase().endsWith(".mp4") }
+                        val lastSquareBracketOpenIndex = if (firstWebM == null) -1 else firstWebM.lastIndexOf("[")
+
+                        val name = if (firstWebM == null) "Untitled"
+                                   else if (lastSquareBracketOpenIndex > 1) firstWebM.substring(0, lastSquareBracketOpenIndex - 1)
+                                   else firstWebM.substring(0, firstWebM.length - 4)
+
+                        downloadRecord.insert(url, idFromTime, name)
+                        sse.send(SseMessage.Data("{\"end\":$idFromTime}"))
                     }
 
-                    val files = currentDir.list()
-                    val firstWebM = files.find { it.toLowerCase().endsWith(".mp4") }
-                    val lastSquareBracketOpenIndex = if (firstWebM == null) -1 else firstWebM.lastIndexOf("[")
-
-                    val name = if (firstWebM == null) "Untitled"
-                               else if (lastSquareBracketOpenIndex > 1) firstWebM.substring(0, lastSquareBracketOpenIndex - 1)
-                               else firstWebM.substring(0, firstWebM.length - 4)
-
-                    downloadRecord.insert(url, idFromTime, name)
-                    sse.send(SseMessage.Data("{\"end\":$idFromTime}"))
                     Thread.sleep(1) // Why?
-                } catch (ex: LensFailure) {
-                    sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
                 } catch (ex: Throwable) {
+                    when (ex) {
+                        is LensFailure, is URISyntaxException -> {
+                            sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST"))))
+                        }
+                        else -> {
+                            sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR"))))
+                        }
+                    }
+
                     // TODO: Add logger
-                    println(ex)
-                    sse.send(SseMessage.Data(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR"))))
+                    System.err.println(ex)
                 } finally {
                     sse.close()
                 }

@@ -35,9 +35,16 @@ const Form = styled.form`
     }
 `;
 
+const ErrorMessage = styled.p`
+    font-size: 20px;
+    margin-left: 22px;
+    color: red;
+`;
+
 function CreatePage() {
     const [url, setUrl] = useState('');
     const [progress, setProgress] = useState(null);
+    const [isError, setIsError] = useState(false);
 
     const eventSourceRef = useRef();
 
@@ -45,6 +52,7 @@ function CreatePage() {
 
     const handleUrlChange = useCallback((event) => {
         setUrl(event.target.value);
+        setIsError(false);
     }, []);
     const handleSubmit = useCallback((event) => {
         event.preventDefault();
@@ -55,9 +63,12 @@ function CreatePage() {
 
         eventSourceRef.current.onmessage = (message) => {
             const { data } = message;
-            const { current, total, end } = JSON.parse(data);
+            const { current, total, end, err } = JSON.parse(data);
 
-            if (end) {
+            if (err) {
+                setIsError(true);
+                setProgress(null);
+            } else if (end) {
                 navigate(`/watch/${end}?refetch=1`);
             } else {
                 setProgress(`${Math.floor(current / total * 100)}%`); // TODO
@@ -86,6 +97,7 @@ function CreatePage() {
                     {isLoading ? <span>{progress}</span> : null}
                 </fieldset>
             </Form>
+            {isError && <ErrorMessage>An error occurred.</ErrorMessage>}
         </div>
     );
 }

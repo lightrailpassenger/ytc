@@ -63,4 +63,24 @@ class DownloadRecord {
 
         return result
     }
+
+    fun selectByUrl(url: String): DownloadRecordEntry? {
+        this.connect()
+        var result: DownloadRecordEntry? = null;
+        transaction {
+            val selected = DownloadRecordData.selectAll().where {
+                DownloadRecordData.url eq url
+            }.limit(1).map {
+                DownloadRecordEntry(
+                    it[DownloadRecordData.url],
+                    it[DownloadRecordData.createdAt],
+                    it[DownloadRecordData.name]
+                )
+            }
+
+            result = if (selected.isEmpty()) null else selected[0]
+        }
+
+        return result
+    }
 }
