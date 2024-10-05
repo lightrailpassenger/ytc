@@ -69,6 +69,18 @@ function CreatePage() {
                 setIsError(true);
                 setProgress(null);
             } else if (end) {
+                if (Notification.permission === 'granted') {
+                    const notification = new Notification('Video downloaded successfully', {
+                        renotify: true,
+                        tag: `${end}`,
+                        body: `From ${url}`,
+                    });
+
+                    setTimeout(() => {
+                        notification.close();
+                    }, 5000);
+                }
+
                 navigate(`/watch/${end}?refetch=1`);
             } else {
                 setProgress(`${Math.floor(current / total * 100)}%`); // TODO
