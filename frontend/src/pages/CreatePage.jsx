@@ -5,6 +5,7 @@ import {
     useEffect,
 } from 'react';
 import styled from '@emotion/styled';
+import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 
@@ -48,6 +49,7 @@ function CreatePage() {
 
     const eventSourceRef = useRef();
 
+    const intl = useIntl();
     const navigate = useNavigate();
 
     const handleUrlChange = useCallback((event) => {
@@ -59,7 +61,7 @@ function CreatePage() {
         eventSourceRef.current = new EventSource(
             `http://localhost:9000/videos?url=${encodeURIComponent(url)}`
         );
-        setProgress('Loading');
+        setProgress(intl.formatMessage({ id: 'createPage.loading' }));
 
         eventSourceRef.current.onmessage = (message) => {
             const { data } = message;
@@ -70,11 +72,14 @@ function CreatePage() {
                 setProgress(null);
             } else if (end) {
                 if (Notification.permission === 'granted') {
-                    const notification = new Notification('Video downloaded successfully', {
-                        renotify: true,
-                        tag: `${end}`,
-                        body: `From ${url}`,
-                    });
+                    const notification = new Notification(
+                        intl.formatMessage({ id: 'createPage.conversionDone.title' }),
+                        {
+                            renotify: true,
+                            tag: `${end}`,
+                            body: intl.formatMessage({ id: 'createPage.conversionDone.body' }, { url }),
+                        },
+                    );
 
                     setTimeout(() => {
                         notification.close();
@@ -100,16 +105,24 @@ function CreatePage() {
         <div>
             <Top>
                 <NavLink to="/">{"<"}</NavLink>
-                <h1>Create</h1>
+                <h1>{intl.formatMessage({ id: 'createPage.title' })}</h1>
             </Top>
             <Form onSubmit={handleSubmit}>
                 <fieldset disabled={isLoading}>
-                    <input type="text" placeholder="URL" value={url} onChange={handleUrlChange} required />
-                    <input type="submit" value="Create" />
+                    <input
+                        type="text"
+                        placeholder={intl.formatMessage({ id: 'createPage.input.placeholder' })}
+                        value={url}
+                        onChange={handleUrlChange}
+                        required
+                    />
+                    <input type="submit" value={intl.formatMessage({ id: 'createPage.submit' })} />
                     {isLoading ? <span>{progress}</span> : null}
                 </fieldset>
             </Form>
-            {isError && <ErrorMessage>An error occurred.</ErrorMessage>}
+            {isError && <ErrorMessage>
+                {intl.formatMessage({ id: 'createPage.error' })}</ErrorMessage>
+            }
         </div>
     );
 }

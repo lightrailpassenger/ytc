@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useIntl } from 'react-intl';
+import { useNavigate, useOutletContext } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from '@emotion/styled';
 
@@ -21,7 +22,17 @@ const Item = styled.div`
 
 const CreateItem = styled(Item)`width: auto; display: inline-block`;
 
-function HomePage() {
+const LangButton = styled.button`
+    background: transparent;
+    font-size: 20px;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
+`;
+
+function HomePage({ setLocale }) {
+    const intl = useIntl();
     const [downloadedList] = useVideoInfo();
     const navigate = useNavigate();
     const handleCreateVideo = useCallback(async (event) => {
@@ -36,13 +47,13 @@ function HomePage() {
 
     return (
         <div>
-            <H1>Videos</H1>
+            <H1>{intl.formatMessage({ id: 'homePage.title' })}</H1>
             {downloadedList && <CreateItem key="create">
                 <NavLink
                     to="/create"
                     onClick={handleCreateVideo}
                 >
-                    Create
+                    {intl.formatMessage({ id: 'homePage.createButton.text' })}
                 </NavLink>
             </CreateItem>}
             {downloadedList?.map(({ url, createdAt, name }) => (
@@ -52,6 +63,10 @@ function HomePage() {
                 </NavLink>
                 </Item>
             ))}
+            <div>
+                <LangButton onClick={() => { setLocale('en'); }}>EN</LangButton>
+                <LangButton onClick={() => { setLocale('zh'); }}>中</LangButton>
+            </div>
         </div>
     );
 }

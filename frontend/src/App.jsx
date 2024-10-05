@@ -1,31 +1,40 @@
 import { useEffect } from 'react';
 
+import { IntlProvider } from 'react-intl';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Global, css } from '@emotion/react';
 
 import VideoInfoContextProvider, { useVideoInfo } from './contexts/VideoInfo.jsx';
+import useLocalStorage from './hooks/useLocalStorage.js';
 
 import HomePage from './pages/HomePage.jsx';
 import CreatePage from './pages/CreatePage.jsx';
 import WatchPage from './pages/WatchPage.jsx';
 
-const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <HomePage />,
-    },
-    {
-        path: '/watch/:createdAt',
-        element: <WatchPage />,
-    },
-    {
-        path: '/create',
-        element: <CreatePage />,
-    },
-]);
+import translations from './translations/index.js';
+
+const createRouter = ({
+    setLocale,
+}) => {
+    return createBrowserRouter([
+        {
+            path: '/',
+            element: <HomePage setLocale={setLocale} />,
+        },
+        {
+            path: '/watch/:createdAt',
+            element: <WatchPage />,
+        },
+        {
+            path: '/create',
+            element: <CreatePage />,
+        },
+    ]);
+};
 
 function App() {
     const [, setDownloadedList] = useVideoInfo();
+    const [locale, setLocale] = useLocalStorage('lang');
 
     useEffect(() => {
         const ac = new AbortController();
@@ -47,8 +56,14 @@ function App() {
         };
     }, []);
 
+    const refinedLocale = locale && locale in translations ? locale : 'en';
+
     return (
-        <>
+        <IntlProvider
+            key={refinedLocale}
+            locale={refinedLocale}
+            messages={translations[refinedLocale]}
+        >
             <Global styles={css`
                 body {
                     margin: 1em;
@@ -74,8 +89,8 @@ function App() {
                     color: inherit;
                 }
             `} />
-            <RouterProvider router={router} />
-        </>
+            <RouterProvider router={createRouter({ setLocale })} />
+        </IntlProvider>
     );
 }
 
