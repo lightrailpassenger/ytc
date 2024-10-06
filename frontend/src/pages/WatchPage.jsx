@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useParams, useSearchParams, NavLink, Navigate } from 'react-router-dom';
 
@@ -33,6 +33,7 @@ function WatchPage() {
     const [, setDownloadedList] = useVideoInfo();
 
     const shouldRefetch = Boolean(searchParams.get("refetch"));
+    const [hasFetched, setHasFetched] = useState(!shouldRefetch);
 
     useEffect(() => {
         if (shouldRefetch) {
@@ -43,13 +44,19 @@ function WatchPage() {
                     const { videos } = await res.json();
 
                     setDownloadedList(videos);
+                    setHasFetched(true);
                 }
             })();
         }
     }, [shouldRefetch]);
 
     if (!video) {
-        return <Navigate to="/404" />;
+        if (hasFetched) {
+            return <Navigate to="/404" />;
+        } else {
+            // Loading time too short, no loading state is added.
+            return null;
+        }
     }
 
     const { name } = video;
