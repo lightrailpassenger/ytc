@@ -7,6 +7,9 @@
     "createPage.conversionDone.title": "成功下載影片",
     "createPage.conversionDone.body": "來自 {url}",
     "homePage.title": "影片",
+    "homePage.cleanup.done": "已刪除{count}段影片",
+    "homePage.cleanup.close": "完成",
+    "homePage.cleanButton.text": "清理",
     "homePage.createButton.text": "建立",
     "notFoundPage.title": "找不到",
     "notFoundPage.backToHome": "首頁"
