@@ -47,7 +47,7 @@ function HomePage({ setLocale }) {
         }
 
         navigate('/create');
-    }, []);
+    }, [navigate]);
 
     const [cleanedVideoCount, setCleanedVideoCount] = useState(null);
     const handleCleanVideos = useCallback(async () => {
