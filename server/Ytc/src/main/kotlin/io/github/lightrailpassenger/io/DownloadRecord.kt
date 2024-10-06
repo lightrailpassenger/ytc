@@ -3,6 +3,7 @@ package io.github.lightrailpassenger.io
 import java.sql.Connection
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object DownloadRecordData: Table() {
     val url: Column<String> = text("url")
@@ -82,5 +83,14 @@ class DownloadRecord {
         }
 
         return result
+    }
+
+    fun delete(createdAt: String) {
+        this.connect()
+        transaction {
+            DownloadRecordData.deleteWhere {
+                DownloadRecordData.createdAt eq createdAt
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ fun generateListVideosHandler(
                 )
             )
         } catch (err: Throwable) {
-            println(err)
+            System.err.println(err)
             return Response(INTERNAL_SERVER_ERROR).body(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR")))
         }
     }

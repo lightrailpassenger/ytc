@@ -6,6 +6,7 @@ import io.github.lightrailpassenger.routes.generateCreateVideoHandler
 import io.github.lightrailpassenger.routes.generateInitHandler
 import io.github.lightrailpassenger.routes.generateGetVideoHandler
 import io.github.lightrailpassenger.routes.generateListVideosHandler
+import io.github.lightrailpassenger.routes.generateCleanVideosHandler
 import io.github.lightrailpassenger.utils.ensureDbDir
 
 import java.io.File
@@ -14,6 +15,7 @@ import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
+import org.http4k.core.Method.DELETE
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.then
@@ -37,6 +39,7 @@ val createVideo = generateCreateVideoHandler(downloadHelper, downloadRecord)
 val init = generateInitHandler(downloadRecord)
 val listVideos = generateListVideosHandler(downloadRecord)
 val getVideo = generateGetVideoHandler()
+val cleanVideos = generateCleanVideosHandler(downloadRecord, sqliteFile)
 
 val http = routes(
     "/init" bind POST to init,
@@ -44,7 +47,8 @@ val http = routes(
         Response(OK).body("pong")
     },
     "/videos/{createdAt}" bind GET to getVideo,
-    "/downloaded-videos" bind GET to listVideos
+    "/downloaded-videos" bind GET to listVideos,
+    "/garbage-videos" bind DELETE to cleanVideos
 )
 
 val sse = sse(

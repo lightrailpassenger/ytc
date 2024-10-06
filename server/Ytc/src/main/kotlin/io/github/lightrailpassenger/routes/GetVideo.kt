@@ -42,7 +42,7 @@ fun generateGetVideoHandler(): (request: Request) -> Response {
 
             return Response(NOT_FOUND).body(ObjectMapper().writeValueAsString(ErrorResponse("NOT_FOUND")))
         } catch (err: Throwable) {
-            println(err)
+            System.err.println(err)
             return Response(INTERNAL_SERVER_ERROR).body(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR")))
         }
     }
