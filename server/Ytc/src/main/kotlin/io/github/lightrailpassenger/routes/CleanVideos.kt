@@ -20,6 +20,7 @@ fun generateCleanVideosHandler(
 ): (request: Request) -> Response {
     return fun(request: Request): Response {
         var deletedCount = 0
+        var dbBackupFile: File? = null
 
         try {
             val allVideos = downloadRecord.listAll()
@@ -27,7 +28,8 @@ fun generateCleanVideosHandler(
             val dbDir = ensureDbDir()
 
             val now = System.currentTimeMillis()
-            Files.copy(sqliteFile.toPath(), FileOutputStream(File(dbDir, "data-backup-$now")))
+            dbBackupFile = File(dbDir, "data-backup-$now")
+            Files.copy(sqliteFile.toPath(), FileOutputStream(dbBackupFile))
 
 
             for (video in allVideos) {
@@ -69,6 +71,10 @@ fun generateCleanVideosHandler(
         } catch (err: Throwable) {
             System.err.println(err)
             return Response(INTERNAL_SERVER_ERROR).body("{\"count\":$deletedCount}")
+        } finally {
+            if (deletedCount == 0 && dbBackupFile != null) {
+                dbBackupFile.delete()
+            }
         }
     }
 }
