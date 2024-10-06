@@ -75,7 +75,7 @@ function HomePage({ setLocale }) {
             <dialog open={typeof cleanedVideoCount === 'number'} onClose={() => { setCleanedVideoCount(null); }}>
                 <form method="dialog">
                     <p>
-                        {intl.formatMessage({ id: 'homePage.cleanup.done' }, { count: cleanedVideoCount})}
+                        {intl.formatMessage({ id: 'homePage.cleanup.done' }, { count: cleanedVideoCount })}
                     </p>
                     <input type="submit" value={intl.formatMessage({ id: 'homePage.cleanup.close' })} />
                 </form>
