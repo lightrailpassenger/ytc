@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useNavigate, useOutletContext } from 'react-router';
+import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import styled from '@emotion/styled';
 

@@ -10,8 +10,8 @@ const useLocalStorage = (rawKey) => {
             value(window.localStorage.getItem(key)) :
             value;
 
-        setState(value);
-        window.localStorage.setItem(key, value);
+        setState(newValue);
+        window.localStorage.setItem(key, newValue);
     }, []);
 
     return [state, update];

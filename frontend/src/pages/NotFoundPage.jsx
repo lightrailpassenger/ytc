@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
@@ -27,8 +26,6 @@ const Center = styled.div`
 `;
 
 function NotFoundPage() {
-    const navigate = useNavigate();
-
     return (
         <div>
             <H1>
