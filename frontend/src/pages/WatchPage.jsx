@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
-import { useParams, useSearchParams, NavLink } from 'react-router-dom';
+import { useParams, useSearchParams, NavLink, Navigate } from 'react-router-dom';
 
 import { useVideo, useVideoInfo } from '../contexts/VideoInfo.jsx';
 
@@ -49,7 +49,7 @@ function WatchPage() {
     }, [shouldRefetch]);
 
     if (!video) {
-        return null;
+        return <Navigate to="/404" />;
     }
 
     const { name } = video;

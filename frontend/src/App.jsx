@@ -10,6 +10,7 @@ import useLocalStorage from './hooks/useLocalStorage.js';
 import HomePage from './pages/HomePage.jsx';
 import CreatePage from './pages/CreatePage.jsx';
 import WatchPage from './pages/WatchPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import translations from './translations/index.js';
 
@@ -28,6 +29,10 @@ const createRouter = ({
         {
             path: '/create',
             element: <CreatePage />,
+        },
+        {
+            path: '*',
+            element: <NotFoundPage />,
         },
     ]);
 };

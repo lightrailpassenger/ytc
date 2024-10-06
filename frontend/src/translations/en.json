@@ -7,5 +7,7 @@
     "createPage.conversionDone.title": "Video downloaded successfully",
     "createPage.conversionDone.body": "From {url}",
     "homePage.title": "Videos",
-    "homePage.createButton.text": "Create"
+    "homePage.createButton.text": "Create",
+    "notFoundPage.title": "Not Found",
+    "notFoundPage.backToHome": "Home"
 }
