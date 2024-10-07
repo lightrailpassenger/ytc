@@ -43,6 +43,16 @@ const ErrorMessage = styled.p`
     color: red;
 `;
 
+function normalizeURL(url) {
+    try {
+        const { origin, pathname, searchParams } = new URL(url);
+
+        return `${origin}${pathname}?${new URLSearchParams({ v: searchParams.get('v') })}`;
+    } catch {
+        return url;
+    }
+}
+
 function CreatePage() {
     const [url, setUrl] = useState('');
     const [progress, setProgress] = useState(null);
@@ -60,7 +70,7 @@ function CreatePage() {
     const handleSubmit = useCallback((event) => {
         event.preventDefault();
         eventSourceRef.current = new EventSource(
-            `http://localhost:9000/videos?url=${encodeURIComponent(url)}`
+            `http://localhost:9000/videos?url=${encodeURIComponent(normalizeURL(url))}`
         );
         setProgress(intl.formatMessage({ id: 'createPage.loading' }));
 
