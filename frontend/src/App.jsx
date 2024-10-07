@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Global, css } from '@emotion/react';
@@ -69,6 +70,9 @@ function App() {
             locale={refinedLocale}
             messages={translations[refinedLocale]}
         >
+            <Helmet>
+                <html lang={refinedLocale} />
+            </Helmet>
             <Global styles={css`
                 body {
                     margin: 1em;

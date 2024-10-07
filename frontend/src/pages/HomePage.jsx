@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
@@ -71,6 +72,9 @@ function HomePage({ setLocale }) {
 
     return (
         <div>
+            <Helmet>
+                <title>{intl.formatMessage({ id: 'homePage.head.title' })}</title>
+            </Helmet>
             <H1>{intl.formatMessage({ id: 'homePage.title' })}</H1>
             <dialog open={typeof cleanedVideoCount === 'number'} onClose={() => { setCleanedVideoCount(null); }}>
                 <form method="dialog">

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
+import { Helmet } from 'react-helmet';
 import { NavLink } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const H1 = styled.h1`
     width: 100%;
@@ -26,8 +27,15 @@ const Center = styled.div`
 `;
 
 function NotFoundPage() {
+    const intl = useIntl();
+
     return (
         <div>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({ id: "notFoundPage.head.title" })}
+                </title>
+            </Helmet>
             <H1>
                 <FormattedMessage id="notFoundPage.title" />
             </H1>

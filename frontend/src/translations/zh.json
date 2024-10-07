@@ -1,16 +1,21 @@
 {
     "createPage.title": "建立",
+    "createPage.head.loading.title": "({progress}) 下載影片",
+    "createPage.head.title": "建立",
     "createPage.input.placeholder": "網址",
     "createPage.error": "發生錯誤",
     "createPage.submit": "建立",
     "createPage.loading": "等待中",
+    "createPage.progress": "{progress}%",
     "createPage.conversionDone.title": "成功下載影片",
     "createPage.conversionDone.body": "來自 {url}",
     "homePage.title": "影片",
+    "homePage.head.title": "影片",
     "homePage.cleanup.done": "已刪除{count}段影片",
     "homePage.cleanup.close": "完成",
     "homePage.cleanButton.text": "清理",
     "homePage.createButton.text": "建立",
     "notFoundPage.title": "找不到",
+    "notFoundPage.head.title": "找不到",
     "notFoundPage.backToHome": "首頁"
 }

@@ -5,6 +5,7 @@ import {
     useEffect,
 } from 'react';
 import styled from '@emotion/styled';
+import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
@@ -88,7 +89,10 @@ function CreatePage() {
 
                 navigate(`/watch/${end}?refetch=1`);
             } else {
-                setProgress(`${Math.floor(current / total * 100)}%`); // TODO
+                setProgress(intl.formatMessage(
+                    { id: 'createPage.progress' },
+                    { progress: Math.floor(current / total * 100) },
+                ));
             }
         };
     }, [url, navigate]);
@@ -103,6 +107,13 @@ function CreatePage() {
 
     return (
         <div>
+            <Helmet>
+                <title>
+                    {intl.formatMessage({
+                        id: isLoading ? 'createPage.head.loading.title' : 'createPage.head.title'
+                    }, { progress })}
+                </title>
+            </Helmet>
             <Top>
                 <NavLink to="/">{"<"}</NavLink>
                 <h1>{intl.formatMessage({ id: 'createPage.title' })}</h1>

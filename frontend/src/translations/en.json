@@ -1,16 +1,21 @@
 {
     "createPage.title": "Create",
+    "createPage.head.loading.title": "({progress}) Download video",
+    "createPage.head.title": "Create",
     "createPage.input.placeholder": "URL",
     "createPage.error": "An error occurred.",
     "createPage.submit": "Create",
     "createPage.loading": "Loading",
+    "createPage.progress": "{progress}%",
     "createPage.conversionDone.title": "Video downloaded successfully",
     "createPage.conversionDone.body": "From {url}",
     "homePage.title": "Videos",
+    "homePage.head.title": "Videos",
     "homePage.cleanup.done": "{count, plural, one {# item} other {# items}} deleted",
     "homePage.cleanup.close": "Complete",
     "homePage.cleanButton.text": "GC",
     "homePage.createButton.text": "Create",
     "notFoundPage.title": "Not Found",
+    "notFoundPage.head.title": "Not Found",
     "notFoundPage.backToHome": "Home"
 }

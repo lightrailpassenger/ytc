@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
+import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams, NavLink, Navigate } from 'react-router-dom';
 
 import { useVideo, useVideoInfo } from '../contexts/VideoInfo.jsx';
@@ -63,6 +64,9 @@ function WatchPage() {
 
     return (
         <div>
+            <Helmet>
+                <title>{name}</title>
+            </Helmet>
             <Top>
                 <NavLink to="/">{"<"}</NavLink>
                 <h1>{name}</h1>
