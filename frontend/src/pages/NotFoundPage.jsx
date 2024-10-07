@@ -14,11 +14,6 @@ const Center = styled.div`
     text-align: center;
 
     > a {
-        :hover, :visited, :active {
-            text-decoration: none;
-        }
-
-        text-decoration: none;
         border: 1px solid;
         border-radius: 5px;
         padding: 5px;
