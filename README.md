@@ -30,6 +30,13 @@ best way is to make things local.
 
 ## Build and run
 
+### Dependencies
+
+Install the following via `brew`:
+
+- `yt-dlp`
+- `ffmpeg`
+
 ### Backend
 
 ```bash
@@ -46,6 +53,10 @@ yarn dev
 ```
 
 Then, visit `localhost:5173` to see if things work smoothly.
+
+## Safari
+
+[Conversions are needed](https://stackoverflow.com/questions/58742765/convert-videos-from-264-to-265-hevc-with-ffmpeg) if Safari is used.
 
 ## Caveats
 
