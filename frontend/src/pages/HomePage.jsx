@@ -40,25 +40,32 @@ function HomePage({ setLocale }) {
     const intl = useIntl();
     const [downloadedList, setDownloadedList] = useVideoInfo();
     const navigate = useNavigate();
-    const handleCreateVideo = useCallback(async (event) => {
-        event.preventDefault();
+    const handleCreateVideo = useCallback(
+        async (event) => {
+            event.preventDefault();
 
-        if (Notification.permission !== 'denied') {
-            await Notification.requestPermission();
-        }
+            if (Notification.permission !== 'denied') {
+                await Notification.requestPermission();
+            }
 
-        navigate('/create');
-    }, [navigate]);
+            navigate('/create');
+        },
+        [navigate]
+    );
 
     const [cleanedVideoCount, setCleanedVideoCount] = useState(null);
     const handleCleanVideos = useCallback(async () => {
         try {
-            const res = await fetch('http://localhost:9000/garbage-videos', { method: 'delete' });
+            const res = await fetch('http://localhost:9000/garbage-videos', {
+                method: 'delete',
+            });
             const { count } = await res.json();
 
             setCleanedVideoCount(count);
 
-            const refetchRes = await fetch('http://localhost:9000/downloaded-videos');
+            const refetchRes = await fetch(
+                'http://localhost:9000/downloaded-videos'
+            );
 
             if (refetchRes.ok) {
                 const { videos } = await refetchRes.json();
@@ -73,42 +80,70 @@ function HomePage({ setLocale }) {
     return (
         <div>
             <Helmet>
-                <title>{intl.formatMessage({ id: 'homePage.head.title' })}</title>
+                <title>
+                    {intl.formatMessage({ id: 'homePage.head.title' })}
+                </title>
             </Helmet>
             <H1>{intl.formatMessage({ id: 'homePage.title' })}</H1>
-            <dialog open={typeof cleanedVideoCount === 'number'} onClose={() => { setCleanedVideoCount(null); }}>
+            <dialog
+                open={typeof cleanedVideoCount === 'number'}
+                onClose={() => {
+                    setCleanedVideoCount(null);
+                }}
+            >
                 <form method="dialog">
                     <p>
-                        {intl.formatMessage({ id: 'homePage.cleanup.done' }, { count: cleanedVideoCount })}
+                        {intl.formatMessage(
+                            { id: 'homePage.cleanup.done' },
+                            { count: cleanedVideoCount }
+                        )}
                     </p>
-                    <input type="submit" value={intl.formatMessage({ id: 'homePage.cleanup.close' })} />
+                    <input
+                        type="submit"
+                        value={intl.formatMessage({
+                            id: 'homePage.cleanup.close',
+                        })}
+                    />
                 </form>
             </dialog>
             {downloadedList && (
                 <>
                     <SmallItem key="create">
-                        <NavLink
-                            to="/create"
-                            onClick={handleCreateVideo}
-                        >
-                            {intl.formatMessage({ id: 'homePage.createButton.text' })}
+                        <NavLink to="/create" onClick={handleCreateVideo}>
+                            {intl.formatMessage({
+                                id: 'homePage.createButton.text',
+                            })}
                         </NavLink>
                     </SmallItem>
                     <SmallItem key="clean" onClick={handleCleanVideos}>
-                        {intl.formatMessage({ id: 'homePage.cleanButton.text' })}
+                        {intl.formatMessage({
+                            id: 'homePage.cleanButton.text',
+                        })}
                     </SmallItem>
                 </>
             )}
             {downloadedList?.map(({ url, createdAt, name }) => (
                 <Item key={url}>
-                <NavLink to={`/watch/${encodeURIComponent(createdAt)}`}>
-                {name}
-                </NavLink>
+                    <NavLink to={`/watch/${encodeURIComponent(createdAt)}`}>
+                        {name}
+                    </NavLink>
                 </Item>
             ))}
             <div>
-                <LangButton onClick={() => { setLocale('en'); }}>EN</LangButton>
-                <LangButton onClick={() => { setLocale('zh'); }}>中</LangButton>
+                <LangButton
+                    onClick={() => {
+                        setLocale('en');
+                    }}
+                >
+                    EN
+                </LangButton>
+                <LangButton
+                    onClick={() => {
+                        setLocale('zh');
+                    }}
+                >
+                    中
+                </LangButton>
             </div>
         </div>
     );

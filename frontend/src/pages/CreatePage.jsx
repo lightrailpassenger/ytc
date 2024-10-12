@@ -1,9 +1,4 @@
-import {
-    useState,
-    useRef,
-    useCallback,
-    useEffect,
-} from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
@@ -26,11 +21,12 @@ const Form = styled.form`
         display: flex;
         align-items: baseline;
 
-        > input[type="text"] {
+        > input[type='text'] {
             flex: 1 1 0;
         }
 
-        > input, span {
+        > input,
+        span {
             font-size: 30px;
             margin-left: 10px;
         }
@@ -67,45 +63,55 @@ function CreatePage() {
         setUrl(event.target.value);
         setIsError(false);
     }, []);
-    const handleSubmit = useCallback((event) => {
-        event.preventDefault();
-        eventSourceRef.current = new EventSource(
-            `http://localhost:9000/videos?url=${encodeURIComponent(normalizeURL(url))}`
-        );
-        setProgress(intl.formatMessage({ id: 'createPage.loading' }));
+    const handleSubmit = useCallback(
+        (event) => {
+            event.preventDefault();
+            eventSourceRef.current = new EventSource(
+                `http://localhost:9000/videos?url=${encodeURIComponent(normalizeURL(url))}`
+            );
+            setProgress(intl.formatMessage({ id: 'createPage.loading' }));
 
-        eventSourceRef.current.onmessage = (message) => {
-            const { data } = message;
-            const { current, total, end, err } = JSON.parse(data);
+            eventSourceRef.current.onmessage = (message) => {
+                const { data } = message;
+                const { current, total, end, err } = JSON.parse(data);
 
-            if (err) {
-                setIsError(true);
-                setProgress(null);
-            } else if (end) {
-                if (Notification.permission === 'granted') {
-                    const notification = new Notification(
-                        intl.formatMessage({ id: 'createPage.conversionDone.title' }),
-                        {
-                            renotify: true,
-                            tag: `${end}`,
-                            body: intl.formatMessage({ id: 'createPage.conversionDone.body' }, { url }),
-                        },
+                if (err) {
+                    setIsError(true);
+                    setProgress(null);
+                } else if (end) {
+                    if (Notification.permission === 'granted') {
+                        const notification = new Notification(
+                            intl.formatMessage({
+                                id: 'createPage.conversionDone.title',
+                            }),
+                            {
+                                renotify: true,
+                                tag: `${end}`,
+                                body: intl.formatMessage(
+                                    { id: 'createPage.conversionDone.body' },
+                                    { url }
+                                ),
+                            }
+                        );
+
+                        setTimeout(() => {
+                            notification.close();
+                        }, 5000);
+                    }
+
+                    navigate(`/watch/${end}?refetch=1`);
+                } else {
+                    setProgress(
+                        intl.formatMessage(
+                            { id: 'createPage.progress' },
+                            { progress: Math.floor((current / total) * 100) }
+                        )
                     );
-
-                    setTimeout(() => {
-                        notification.close();
-                    }, 5000);
                 }
-
-                navigate(`/watch/${end}?refetch=1`);
-            } else {
-                setProgress(intl.formatMessage(
-                    { id: 'createPage.progress' },
-                    { progress: Math.floor(current / total * 100) },
-                ));
-            }
-        };
-    }, [url, navigate]);
+            };
+        },
+        [url, navigate]
+    );
 
     useEffect(() => {
         return () => {
@@ -119,31 +125,43 @@ function CreatePage() {
         <div>
             <Helmet>
                 <title>
-                    {intl.formatMessage({
-                        id: isLoading ? 'createPage.head.loading.title' : 'createPage.head.title'
-                    }, { progress })}
+                    {intl.formatMessage(
+                        {
+                            id: isLoading
+                                ? 'createPage.head.loading.title'
+                                : 'createPage.head.title',
+                        },
+                        { progress }
+                    )}
                 </title>
             </Helmet>
             <Top>
-                <NavLink to="/">{"<"}</NavLink>
+                <NavLink to="/">{'<'}</NavLink>
                 <h1>{intl.formatMessage({ id: 'createPage.title' })}</h1>
             </Top>
             <Form onSubmit={handleSubmit}>
                 <fieldset disabled={isLoading}>
                     <input
                         type="text"
-                        placeholder={intl.formatMessage({ id: 'createPage.input.placeholder' })}
+                        placeholder={intl.formatMessage({
+                            id: 'createPage.input.placeholder',
+                        })}
                         value={url}
                         onChange={handleUrlChange}
                         required
                     />
-                    <input type="submit" value={intl.formatMessage({ id: 'createPage.submit' })} />
+                    <input
+                        type="submit"
+                        value={intl.formatMessage({ id: 'createPage.submit' })}
+                    />
                     {isLoading ? <span>{progress}</span> : null}
                 </fieldset>
             </Form>
-            {isError && <ErrorMessage>
-                {intl.formatMessage({ id: 'createPage.error' })}</ErrorMessage>
-            }
+            {isError && (
+                <ErrorMessage>
+                    {intl.formatMessage({ id: 'createPage.error' })}
+                </ErrorMessage>
+            )}
         </div>
     );
 }

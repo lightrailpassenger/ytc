@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
-import { useParams, useSearchParams, NavLink, Navigate } from 'react-router-dom';
+import {
+    useParams,
+    useSearchParams,
+    NavLink,
+    Navigate,
+} from 'react-router-dom';
 
 import { useVideo, useVideoInfo } from '../contexts/VideoInfo.jsx';
 
@@ -33,13 +38,15 @@ function WatchPage() {
     const video = useVideo(createdAt);
     const [, setDownloadedList] = useVideoInfo();
 
-    const shouldRefetch = Boolean(searchParams.get("refetch"));
+    const shouldRefetch = Boolean(searchParams.get('refetch'));
     const [hasFetched, setHasFetched] = useState(!shouldRefetch);
 
     useEffect(() => {
         if (shouldRefetch) {
             (async () => {
-                const res = await fetch('http://localhost:9000/downloaded-videos');
+                const res = await fetch(
+                    'http://localhost:9000/downloaded-videos'
+                );
 
                 if (res.ok) {
                     const { videos } = await res.json();
@@ -68,11 +75,15 @@ function WatchPage() {
                 <title>{name}</title>
             </Helmet>
             <Top>
-                <NavLink to="/">{"<"}</NavLink>
+                <NavLink to="/">{'<'}</NavLink>
                 <h1>{name}</h1>
             </Top>
             <Center>
-                <Video autoplay controls src={`http://localhost:9000/videos/${encodeURIComponent(createdAt)}`} />
+                <Video
+                    autoplay
+                    controls
+                    src={`http://localhost:9000/videos/${encodeURIComponent(createdAt)}`}
+                />
             </Center>
         </div>
     );

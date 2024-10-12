@@ -28,7 +28,7 @@ function NotFoundPage() {
         <div>
             <Helmet>
                 <title>
-                    {intl.formatMessage({ id: "notFoundPage.head.title" })}
+                    {intl.formatMessage({ id: 'notFoundPage.head.title' })}
                 </title>
             </Helmet>
             <H1>
