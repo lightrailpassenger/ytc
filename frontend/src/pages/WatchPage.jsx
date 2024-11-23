@@ -44,8 +44,10 @@ function WatchPage({ volume, setVolume }) {
     const videoElementRef = useRef();
 
     useLayoutEffect(() => {
-        videoElementRef.current.volume = volume;
-    }, [volume]);
+        if (videoElementRef.current) {
+            videoElementRef.current.volume = volume;
+        }
+    }, [volume, video, hasFetched]);
 
     useEffect(() => {
         if (shouldRefetch) {
