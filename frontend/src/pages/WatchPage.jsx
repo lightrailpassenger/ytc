@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import {
@@ -32,7 +32,7 @@ const Video = styled.video`
     max-height: calc(100vh - 110px);
 `;
 
-function WatchPage() {
+function WatchPage({ volume, setVolume }) {
     const { createdAt } = useParams();
     const [searchParams] = useSearchParams();
     const video = useVideo(createdAt);
@@ -40,6 +40,12 @@ function WatchPage() {
 
     const shouldRefetch = Boolean(searchParams.get('refetch'));
     const [hasFetched, setHasFetched] = useState(!shouldRefetch);
+
+    const videoElementRef = useRef();
+
+    useLayoutEffect(() => {
+        videoElementRef.current.volume = volume;
+    }, [volume]);
 
     useEffect(() => {
         if (shouldRefetch) {
@@ -82,6 +88,10 @@ function WatchPage() {
                 <Video
                     autoplay
                     controls
+                    ref={videoElementRef}
+                    onVolumeChange={(event) => {
+                        setVolume(event.target.volume);
+                    }}
                     src={`http://localhost:9000/videos/${encodeURIComponent(createdAt)}`}
                 />
             </Center>

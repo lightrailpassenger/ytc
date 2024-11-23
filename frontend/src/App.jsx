@@ -17,7 +17,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import translations from './translations/index.js';
 
-const createRouter = ({ setLocale }) => {
+const createRouter = ({ volume, setVolume, setLocale }) => {
     return createBrowserRouter([
         {
             path: '/',
@@ -25,7 +25,7 @@ const createRouter = ({ setLocale }) => {
         },
         {
             path: '/watch/:createdAt',
-            element: <WatchPage />,
+            element: <WatchPage volume={volume} setVolume={setVolume} />,
         },
         {
             path: '/create',
@@ -41,6 +41,7 @@ const createRouter = ({ setLocale }) => {
 function App() {
     const [, setDownloadedList] = useVideoInfo();
     const [locale, setLocale] = useLocalStorage('lang');
+    const [volume, setVolume] = useLocalStorage('vol');
 
     useEffect(() => {
         const ac = new AbortController();
@@ -108,7 +109,13 @@ function App() {
                     }
                 `}
             />
-            <RouterProvider router={createRouter({ setLocale })} />
+            <RouterProvider
+                router={createRouter({
+                    volume,
+                    setVolume,
+                    setLocale,
+                })}
+            />
         </IntlProvider>
     );
 }
