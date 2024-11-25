@@ -2,11 +2,16 @@ package io.github.lightrailpassenger
 
 import io.github.lightrailpassenger.io.DownloadHelper
 import io.github.lightrailpassenger.io.DownloadRecord
+import io.github.lightrailpassenger.io.Playlist
 import io.github.lightrailpassenger.routes.generateCreateVideoHandler
 import io.github.lightrailpassenger.routes.generateInitHandler
 import io.github.lightrailpassenger.routes.generateGetVideoHandler
 import io.github.lightrailpassenger.routes.generateListVideosHandler
 import io.github.lightrailpassenger.routes.generateCleanVideosHandler
+import io.github.lightrailpassenger.routes.generateCreatePlaylistHandler
+import io.github.lightrailpassenger.routes.generateListAllPlaylistsHandler
+import io.github.lightrailpassenger.routes.generateGetPlaylistItemsHandler
+import io.github.lightrailpassenger.routes.generateSetPlaylistItemsHandler
 import io.github.lightrailpassenger.utils.ensureDbDir
 
 import java.io.File
@@ -15,6 +20,7 @@ import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
+import org.http4k.core.Method.PUT
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -32,14 +38,22 @@ import org.http4k.server.asServer
 
 val dbPath = ensureDbDir()
 val sqliteFile = File(dbPath, "data.db")
+val sqliteFilePath = sqliteFile.getPath()
 
 val downloadHelper = DownloadHelper()
-val downloadRecord = DownloadRecord(sqliteFile.getPath())
+val downloadRecord = DownloadRecord(sqliteFilePath)
+val playlist = Playlist(sqliteFilePath)
+
 val createVideo = generateCreateVideoHandler(downloadHelper, downloadRecord)
-val init = generateInitHandler(downloadRecord)
+val init = generateInitHandler(downloadRecord, playlist)
 val listVideos = generateListVideosHandler(downloadRecord)
 val getVideo = generateGetVideoHandler()
 val cleanVideos = generateCleanVideosHandler(downloadRecord, sqliteFile)
+
+val createPlaylist = generateCreatePlaylistHandler(playlist)
+val getPlaylists = generateListAllPlaylistsHandler(playlist)
+val getPlaylistItems = generateGetPlaylistItemsHandler(playlist)
+val setPlaylistItems = generateSetPlaylistItemsHandler(playlist)
 
 val http = routes(
     "/init" bind POST to init,
@@ -48,7 +62,11 @@ val http = routes(
     },
     "/videos/{createdAt}" bind GET to getVideo,
     "/downloaded-videos" bind GET to listVideos,
-    "/garbage-videos" bind DELETE to cleanVideos
+    "/garbage-videos" bind DELETE to cleanVideos,
+    "/playlists/{playlistId}" bind GET to getPlaylistItems,
+    "/playlists/{playlistId}" bind PUT to setPlaylistItems,
+    "/playlists" bind GET to getPlaylists,
+    "/playlists" bind POST to createPlaylist
 )
 
 val sse = sse(

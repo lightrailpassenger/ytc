@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 
 import io.github.lightrailpassenger.formats.ErrorResponse
 import io.github.lightrailpassenger.io.DownloadRecord
+import io.github.lightrailpassenger.io.Playlist
 
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -11,11 +12,13 @@ import org.http4k.core.Status.Companion.NO_CONTENT
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 
 fun generateInitHandler(
-    downloadRecord: DownloadRecord
+    downloadRecord: DownloadRecord,
+    playlist: Playlist,
 ): (request: Request) -> Response {
     return fun(request: Request): Response {
         try {
             downloadRecord.createTable()
+            playlist.createTable()
 
             return Response(NO_CONTENT)
         } catch (err: Throwable) {
