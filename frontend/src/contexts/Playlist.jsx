@@ -71,7 +71,7 @@ const usePlaylistItems = () => {
 
                 return urls;
             } else {
-                setPkaylistItemMap((prevMap) => {
+                setPlaylistItemMap((prevMap) => {
                     return produce(prevMap, (map) => map.set(id, null));
                 });
 

@@ -42,6 +42,7 @@ const ItemButton = styled(NavLink)`
     margin-left: 10px;
 `;
 
+// eslint-disable-next-line no-unused-vars -- TODO Create button
 const SmallItem = styled(Item)`
     width: auto;
     cursor: pointer;
