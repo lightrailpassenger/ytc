@@ -17,5 +17,8 @@
     "homePage.createButton.text": "建立",
     "notFoundPage.title": "找不到",
     "notFoundPage.head.title": "找不到",
-    "notFoundPage.backToHome": "首頁"
+    "notFoundPage.backToHome": "首頁",
+    "playlistPage.title": "播放清單",
+    "playlistPage.head.title": "播放清單",
+    "playlistPage.noPlaylist": "沒有播放清單"
 }

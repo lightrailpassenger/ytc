@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router';
 import {
     useParams,
     useSearchParams,
@@ -8,7 +9,8 @@ import {
     Navigate,
 } from 'react-router-dom';
 
-import { useVideo, useVideoInfo } from '../contexts/VideoInfo.jsx';
+import { usePlaylistItems } from '../contexts/Playlist.jsx';
+import { useVideo, useVideoInfo, useVideoUrl } from '../contexts/VideoInfo.jsx';
 
 const Top = styled.span`
     font-size: 50px;
@@ -33,19 +35,54 @@ const Video = styled.video`
 `;
 
 function WatchPage({ volume, setVolume }) {
-    const { createdAt } = useParams();
+    const { createdAt: rawCreatedAt, playlistId, current } = useParams();
     const [searchParams] = useSearchParams();
-    const video = useVideo(createdAt);
-    const [, setDownloadedList] = useVideoInfo();
+    const navigate = useNavigate();
 
-    const shouldRefetch = Boolean(searchParams.get('refetch'));
-    const [hasFetched, setHasFetched] = useState(video && !shouldRefetch);
+    const [createdAt, setCreatedAt] = useState(rawCreatedAt);
+    const getPlaylistItems = usePlaylistItems();
+    const getVideoFromUrl = useVideoUrl();
+
+    const video = useVideo(createdAt);
+    const [downloadedList, setDownloadedList] = useVideoInfo();
+    const playlistItemCountRef = useRef(null);
+
+    useEffect(() => {
+        if (
+            downloadedList?.length &&
+            !rawCreatedAt &&
+            playlistId &&
+            typeof current === 'string'
+        ) {
+            (async () => {
+                const items = await getPlaylistItems(playlistId);
+                const { createdAt: thisCreatedAt = null } =
+                    getVideoFromUrl(items[current]) ?? {};
+
+                playlistItemCountRef.current = items.length;
+                setCreatedAt(thisCreatedAt);
+            })();
+        }
+    }, [
+        downloadedList,
+        createdAt,
+        playlistId,
+        current,
+        getPlaylistItems,
+        getVideoFromUrl,
+    ]);
+
+    const shouldRefetch = Boolean(!video || searchParams.get('refetch'));
+    const [hasFetched, setHasFetched] = useState(!shouldRefetch);
 
     const videoElementRef = useRef();
 
     useLayoutEffect(() => {
         if (videoElementRef.current) {
-            videoElementRef.current.volume = volume;
+            const videoElement = videoElementRef.current;
+
+            videoElement.volume = volume;
+            videoElement.play();
         }
     }, [volume, video, hasFetched]);
 
@@ -66,13 +103,29 @@ function WatchPage({ volume, setVolume }) {
         }
     }, [shouldRefetch]);
 
-    if (!video) {
-        if (hasFetched) {
+    if (typeof playlistItemCountRef.current === 'number') {
+        const currentNum = Number(current);
+
+        if (
+            currentNum < 0 ||
+            currentNum >= playlistItemCountRef.current ||
+            !Number.isInteger(currentNum)
+        ) {
             return <Navigate to="/404" />;
-        } else {
-            // Loading time too short, no loading state is added.
-            return null;
         }
+    }
+
+    if (downloadedList) {
+        if (!video) {
+            if (createdAt && hasFetched) {
+                return <Navigate to="/404" />;
+            } else {
+                // Loading time too short, no loading state is added.
+                return null;
+            }
+        }
+    } else {
+        return null;
     }
 
     const { name } = video;
@@ -93,6 +146,18 @@ function WatchPage({ volume, setVolume }) {
                     ref={videoElementRef}
                     onVolumeChange={(event) => {
                         setVolume(event.target.volume);
+                    }}
+                    onEnded={() => {
+                        const next = Number(current) + 1;
+
+                        if (
+                            typeof playlistItemCountRef.current === 'number' &&
+                            next < playlistItemCountRef.current
+                        ) {
+                            navigate(
+                                `/play/${encodeURIComponent(playlistId)}/${next}`
+                            );
+                        }
                     }}
                     src={`http://localhost:9000/videos/${encodeURIComponent(createdAt)}`}
                 />

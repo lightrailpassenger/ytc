@@ -47,5 +47,16 @@ const useVideoInfo = () => {
     return [value, update];
 };
 
+const useVideoUrl = () => {
+    const { value = [] } = useContext(VideoInfoContext);
+
+    return useCallback(
+        (url) => {
+            return value.find((item) => item.url === url);
+        },
+        [value]
+    );
+};
+
 export default Provider;
-export { VideoInfoContext, useVideo, useVideoInfo };
+export { VideoInfoContext, useVideo, useVideoInfo, useVideoUrl };

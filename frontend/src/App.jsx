@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Global, css } from '@emotion/react';
 
+import PlaylistContextProvider from './contexts/Playlist.jsx';
 import VideoInfoContextProvider, {
     useVideoInfo,
 } from './contexts/VideoInfo.jsx';
@@ -13,6 +14,7 @@ import useLocalStorage from './hooks/useLocalStorage.js';
 import HomePage from './pages/HomePage.jsx';
 import CreatePage from './pages/CreatePage.jsx';
 import WatchPage from './pages/WatchPage.jsx';
+import PlaylistPage from './pages/PlaylistPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import translations from './translations/index.js';
@@ -28,8 +30,16 @@ const createRouter = ({ volume, setVolume, setLocale }) => {
             element: <WatchPage volume={volume} setVolume={setVolume} />,
         },
         {
+            path: '/play/:playlistId/:current',
+            element: <WatchPage volume={volume} setVolume={setVolume} />,
+        },
+        {
             path: '/create',
             element: <CreatePage />,
+        },
+        {
+            path: '/playlist',
+            element: <PlaylistPage />,
         },
         {
             path: '*',
@@ -123,7 +133,9 @@ function App() {
 export default function Wrapper() {
     return (
         <VideoInfoContextProvider>
-            <App />
+            <PlaylistContextProvider>
+                <App />
+            </PlaylistContextProvider>
         </VideoInfoContextProvider>
     );
 }

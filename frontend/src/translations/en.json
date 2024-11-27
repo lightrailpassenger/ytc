@@ -17,5 +17,8 @@
     "homePage.createButton.text": "Create",
     "notFoundPage.title": "Not Found",
     "notFoundPage.head.title": "Not Found",
-    "notFoundPage.backToHome": "Home"
+    "notFoundPage.backToHome": "Home",
+    "playlistPage.title": "Playlists",
+    "playlistPage.head.title": "Playlists",
+    "playlistPage.noPlaylist": "No playlist"
 }
