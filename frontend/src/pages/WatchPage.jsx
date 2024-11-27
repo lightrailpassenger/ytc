@@ -39,7 +39,7 @@ function WatchPage({ volume, setVolume }) {
     const [, setDownloadedList] = useVideoInfo();
 
     const shouldRefetch = Boolean(searchParams.get('refetch'));
-    const [hasFetched, setHasFetched] = useState(!shouldRefetch);
+    const [hasFetched, setHasFetched] = useState(video && !shouldRefetch);
 
     const videoElementRef = useRef();
 
