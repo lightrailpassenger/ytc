@@ -79,8 +79,20 @@ const usePlaylistItems = () => {
             }
         }
     }, []);
+    const setItems = useCallback(async (id, urls, signal) => {
+        const res = await fetch(
+            `http://localhost:9000/playlists/${encodeURIComponent(id)}`,
+            { method: 'put', body: JSON.stringify({ urls }), signal }
+        );
 
-    return getItems;
+        if (res.ok) {
+            setPlaylistItemMap((prevMap) => {
+                return produce(prevMap, (map) => map.set(id, urls));
+            });
+        }
+    }, []);
+
+    return [getItems, setItems];
 };
 
 export default Provider;

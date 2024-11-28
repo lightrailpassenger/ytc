@@ -20,5 +20,8 @@
     "notFoundPage.backToHome": "Home",
     "playlistPage.title": "Playlists",
     "playlistPage.head.title": "Playlists",
-    "playlistPage.noPlaylist": "No playlist"
+    "playlistPage.noPlaylist": "No playlist",
+    "singlePlaylistPage.title": "Playlist - {playlistName}",
+    "singlePlaylistPage.rename": "Rename",
+    "singlePlaylistPage.choose": "Choose"
 }

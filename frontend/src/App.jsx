@@ -15,6 +15,7 @@ import HomePage from './pages/HomePage.jsx';
 import CreatePage from './pages/CreatePage.jsx';
 import WatchPage from './pages/WatchPage.jsx';
 import PlaylistPage from './pages/PlaylistPage.jsx';
+import SinglePlaylistPage from './pages/SinglePlaylistPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import translations from './translations/index.js';
@@ -36,6 +37,10 @@ const createRouter = ({ volume, setVolume, setLocale }) => {
         {
             path: '/create',
             element: <CreatePage />,
+        },
+        {
+            path: '/playlist/:playlistId/edit',
+            element: <SinglePlaylistPage />,
         },
         {
             path: '/playlist',
@@ -116,6 +121,12 @@ function App() {
                     a:active {
                         text-decoration: none !important;
                         color: inherit;
+                    }
+
+                    ul,
+                    ol {
+                        list-style-type: none;
+                        padding: 0;
                     }
                 `}
             />

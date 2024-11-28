@@ -40,7 +40,7 @@ function WatchPage({ volume, setVolume }) {
     const navigate = useNavigate();
 
     const [createdAt, setCreatedAt] = useState(rawCreatedAt);
-    const getPlaylistItems = usePlaylistItems();
+    const [getPlaylistItems] = usePlaylistItems();
     const getVideoFromUrl = useVideoUrl();
 
     const video = useVideo(createdAt);

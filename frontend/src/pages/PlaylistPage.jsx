@@ -84,7 +84,11 @@ function PlaylistPage() {
                     playlists.map((playlist) => (
                         <Item key={playlist.id}>
                             <ItemText>{playlist.name}</ItemText>
-                            <ItemButton>{'🖊️'}</ItemButton>
+                            <ItemButton
+                                to={`/playlist/${encodeURIComponent(playlist.id)}/edit`}
+                            >
+                                {'🖊️'}
+                            </ItemButton>
                             <ItemButton
                                 to={`/play/${encodeURIComponent(playlist.id)}/0`}
                             >

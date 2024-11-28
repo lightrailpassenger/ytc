@@ -20,5 +20,8 @@
     "notFoundPage.backToHome": "首頁",
     "playlistPage.title": "播放清單",
     "playlistPage.head.title": "播放清單",
-    "playlistPage.noPlaylist": "沒有播放清單"
+    "playlistPage.noPlaylist": "沒有播放清單",
+    "singlePlaylistPage.title": "播放清單 - {playlistName}",
+    "singlePlaylistPage.rename": "重新命名",
+    "singlePlaylistPage.choose": "選擇"
 }

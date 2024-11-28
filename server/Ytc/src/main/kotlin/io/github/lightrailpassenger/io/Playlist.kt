@@ -101,7 +101,7 @@ class Playlist {
         this.connect()
         transaction {
             for ((i, u) in entry.urls.withIndex()) {
-                PlaylistItemData.insert {
+                PlaylistItemData.upsert {
                     it[playlistId] = entry.playlistId
                     it[order] = i
                     it[url] = u
