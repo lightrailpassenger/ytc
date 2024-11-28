@@ -6,6 +6,7 @@ import java.sql.Connection
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 
 object PlaylistData: Table() {
     val id: Column<String> = text("id")
@@ -106,6 +107,11 @@ class Playlist {
                     it[order] = i
                     it[url] = u
                 }
+            }
+
+            PlaylistItemData.deleteWhere {
+                (PlaylistItemData.playlistId eq entry.playlistId) and
+                (PlaylistItemData.order greaterEq entry.urls.size)
             }
         }
     }

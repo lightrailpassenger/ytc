@@ -102,7 +102,10 @@ function App() {
                     }
 
                     input,
-                    button {
+                    button,
+                    h1,
+                    h2,
+                    span {
                         color: #a0937d;
                         font-family: 'Fira Sans';
                     }

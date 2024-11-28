@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
@@ -7,6 +14,8 @@ import { NavLink } from 'react-router-dom';
 
 import styled from '@emotion/styled';
 import { Reorder } from 'framer-motion';
+
+import VideoSelectionDialog from '../components/VideoSelectionDialog.jsx';
 
 import { usePlaylist, usePlaylistItems } from '../contexts/Playlist.jsx';
 import { useVideoInfo } from '../contexts/VideoInfo.jsx';
@@ -32,6 +41,7 @@ const Item = styled.div`
     padding: 10px;
     width: 80%;
     background-color: white;
+    cursor: pointer;
     display: flex;
 `;
 
@@ -92,10 +102,28 @@ function SinglePlaylistPage() {
 
     const [videoInfo] = useVideoInfo();
 
-    // eslint-disable-next-line no-unused-vars -- TODO Choose video dialog
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const dialogRef = useRef();
+
+    useLayoutEffect(() => {
+        if (isDialogOpen) {
+            dialogRef.current?.showModal();
+        }
+    }, [isDialogOpen]);
+
     const urlSet = useMemo(() => {
-        return new Set(items?.map(({ url }) => url) ?? []);
+        return new Set(items ?? []);
     }, [items]);
+    const handleSelectionChange = useCallback(
+        (newUrlSet) => {
+            setDialogOpen(false);
+
+            if (newUrlSet !== urlSet) {
+                setItems([...newUrlSet]);
+            }
+        },
+        [urlSet]
+    );
     const videoUrlToNameMap = useMemo(() => {
         return new Map(videoInfo?.map(({ name, url }) => [url, name]) ?? []);
     }, [videoInfo]);
@@ -118,6 +146,11 @@ function SinglePlaylistPage() {
                     )}
                 </title>
             </Helmet>
+            <VideoSelectionDialog
+                ref={dialogRef}
+                urlSet={urlSet}
+                onChoose={handleSelectionChange}
+            />
             <Top>
                 <NavLink to="/playlist">{'<'}</NavLink>
                 <h1>{playlistName}</h1>
@@ -129,10 +162,17 @@ function SinglePlaylistPage() {
                             id: 'singlePlaylistPage.rename',
                         })}
                     </SmallItem>
-                    <SmallItem>
+                    <SmallItem onClick={() => setDialogOpen(true)}>
                         {intl.formatMessage({
                             id: 'singlePlaylistPage.choose',
                         })}
+                    </SmallItem>
+                    <SmallItem>
+                        <NavLink
+                            to={`/play/${encodeURIComponent(playlistId)}/0`}
+                        >
+                            {'➡️'}
+                        </NavLink>
                     </SmallItem>
                 </div>
                 <Reorder.Group axis="y" values={items} onReorder={setItems}>

@@ -23,5 +23,8 @@
     "playlistPage.noPlaylist": "沒有播放清單",
     "singlePlaylistPage.title": "播放清單 - {playlistName}",
     "singlePlaylistPage.rename": "重新命名",
-    "singlePlaylistPage.choose": "選擇"
+    "singlePlaylistPage.choose": "選擇",
+    "videoSelectiondialog.title": "選擇影片",
+    "videoSelectiondialog.cancel": "取消",
+    "videoSelectiondialog.submit": "完成"
 }

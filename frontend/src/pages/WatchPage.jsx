@@ -136,7 +136,7 @@ function WatchPage({ volume, setVolume }) {
                 <title>{name}</title>
             </Helmet>
             <Top>
-                <NavLink to="/">{'<'}</NavLink>
+                <NavLink to={rawCreatedAt ? '/' : '/playlist'}>{'<'}</NavLink>
                 <h1>{name}</h1>
             </Top>
             <Center>

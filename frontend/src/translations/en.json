@@ -23,5 +23,8 @@
     "playlistPage.noPlaylist": "No playlist",
     "singlePlaylistPage.title": "Playlist - {playlistName}",
     "singlePlaylistPage.rename": "Rename",
-    "singlePlaylistPage.choose": "Choose"
+    "singlePlaylistPage.choose": "Choose",
+    "videoSelectionDialog.title": "Select videos",
+    "videoSelectionDialog.cancel": "Cancel",
+    "videoSelectionDialog.submit": "Submit"
 }
