@@ -50,6 +50,7 @@ const YesNoTextDialog = forwardRef((props, ref) => {
         [inputText]
     );
 
+    // FIXME: Can we capture RETURN key press without setting direction?
     return (
         <Dialog ref={ref} onClose={handleDialogClose}>
             <h2>{title}</h2>
@@ -63,11 +64,15 @@ const YesNoTextDialog = forwardRef((props, ref) => {
                         setInputText(event.target.value);
                     }}
                 />
-                <div>
+                <div dir="rtl">
+                    <input
+                        formMethod="dialog"
+                        type="submit"
+                        value={submitText}
+                    />
                     <button formNoValidate formMethod="dialog" value="cancel">
                         {cancelText}
                     </button>
-                    <input type="submit" value={submitText} />
                 </div>
             </form>
         </Dialog>

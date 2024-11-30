@@ -31,6 +31,10 @@
     "singlePlaylistPage.rename": "Rename",
     "singlePlaylistPage.choose": "Choose",
     "singlePlaylistPage.noItem": "Empty playlist",
+    "renamePlaylistDialog.title": "Rename playlist",
+    "renamePlaylistDialog.placeholder": "New name",
+    "renamePlaylistDialog.cancelText": "Cancel",
+    "renamePlaylistDialog.submitText": "Rename",
     "videoSelectionDialog.title": "Select videos",
     "videoSelectionDialog.cancel": "Cancel",
     "videoSelectionDialog.submit": "Submit"

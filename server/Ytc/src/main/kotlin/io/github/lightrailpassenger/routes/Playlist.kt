@@ -83,6 +83,46 @@ fun generateListAllPlaylistsHandler(
     }
 }
 
+data class PatchPlaylistRequestBody(
+    val name: String
+)
+
+val patchPlaylistBodyLens = Body.auto<PatchPlaylistRequestBody>().toLens()
+
+fun generatePatchPlaylistHandler(
+    playlist: Playlist
+): (request: Request) -> Response {
+    return fun(request: Request): Response {
+        try {
+            val body = patchPlaylistBodyLens(request)
+            val name = body.name
+            val playlistId = request.path("playlistId")
+
+            if (playlistId == null) {
+                return Response(BAD_REQUEST).body(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST")))
+            }
+
+            val exists = playlist.rename(playlistId, name)
+
+            if (exists) {
+                return Response(NO_CONTENT)
+            } else {
+                return Response(NOT_FOUND).body(ObjectMapper().writeValueAsString(ErrorResponse("NOT_FOUND")))
+            }
+        } catch (ex: Throwable) {
+            when (ex) {
+                is LensFailure -> {
+                    return Response(BAD_REQUEST).body(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST")))
+                }
+                else -> {
+                    System.err.println(ex)
+                    return Response(INTERNAL_SERVER_ERROR).body(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR")))
+                }
+            }
+        }
+    }
+}
+
 data class GetPlaylistItemsResponseBody(
     val urls: List<String>
 )

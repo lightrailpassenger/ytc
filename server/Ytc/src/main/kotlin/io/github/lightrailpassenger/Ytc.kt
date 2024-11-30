@@ -10,6 +10,7 @@ import io.github.lightrailpassenger.routes.generateListVideosHandler
 import io.github.lightrailpassenger.routes.generateCleanVideosHandler
 import io.github.lightrailpassenger.routes.generateCreatePlaylistHandler
 import io.github.lightrailpassenger.routes.generateListAllPlaylistsHandler
+import io.github.lightrailpassenger.routes.generatePatchPlaylistHandler
 import io.github.lightrailpassenger.routes.generateGetPlaylistItemsHandler
 import io.github.lightrailpassenger.routes.generateSetPlaylistItemsHandler
 import io.github.lightrailpassenger.utils.ensureDbDir
@@ -21,6 +22,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Method.PUT
+import org.http4k.core.Method.PATCH
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -52,6 +54,7 @@ val cleanVideos = generateCleanVideosHandler(downloadRecord, sqliteFile)
 
 val createPlaylist = generateCreatePlaylistHandler(playlist)
 val getPlaylists = generateListAllPlaylistsHandler(playlist)
+val patchPlaylist = generatePatchPlaylistHandler(playlist)
 val getPlaylistItems = generateGetPlaylistItemsHandler(playlist)
 val setPlaylistItems = generateSetPlaylistItemsHandler(playlist)
 
@@ -65,6 +68,7 @@ val http = routes(
     "/garbage-videos" bind DELETE to cleanVideos,
     "/playlists/{playlistId}" bind GET to getPlaylistItems,
     "/playlists/{playlistId}" bind PUT to setPlaylistItems,
+    "/playlists/{playlistId}" bind PATCH to patchPlaylist,
     "/playlists" bind GET to getPlaylists,
     "/playlists" bind POST to createPlaylist
 )

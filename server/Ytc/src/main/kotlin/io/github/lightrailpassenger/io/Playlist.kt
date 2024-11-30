@@ -74,6 +74,20 @@ class Playlist {
         return uuid;
     }
 
+    fun rename(id: String, newName: String): Boolean {
+        this.connect()
+
+        var count = 0
+
+        transaction {
+            count = PlaylistData.update({ PlaylistData.id eq id }) {
+                it[PlaylistData.name] = newName
+            }
+        }
+
+        return count > 0
+    }
+
     fun getAll(): List<PlaylistEntry> {
         this.connect()
         var result: List<PlaylistEntry> = emptyList()

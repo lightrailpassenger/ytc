@@ -31,7 +31,11 @@
     "singlePlaylistPage.rename": "重新命名",
     "singlePlaylistPage.choose": "選擇",
     "singlePlaylistPage.noItem": "空播放清單",
-    "videoSelectiondialog.title": "選擇影片",
-    "videoSelectiondialog.cancel": "取消",
-    "videoSelectiondialog.submit": "完成"
+    "renamePlaylistDialog.title": "重新命名播放清單",
+    "renamePlaylistDialog.placeholder": "新名稱",
+    "renamePlaylistDialog.cancelText": "取消",
+    "renamePlaylistDialog.submitText": "重新命名",
+    "videoSelectionDialog.title": "選擇影片",
+    "videoSelectionDialog.cancel": "取消",
+    "videoSelectionDialog.submit": "完成"
 }

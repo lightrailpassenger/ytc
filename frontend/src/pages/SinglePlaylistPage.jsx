@@ -16,6 +16,7 @@ import styled from '@emotion/styled';
 import { Reorder } from 'framer-motion';
 
 import VideoSelectionDialog from '../components/VideoSelectionDialog.jsx';
+import YesNoTextDialog from '../components/YesNoTextDialog.jsx';
 
 import { usePlaylist, usePlaylistItems } from '../contexts/Playlist.jsx';
 import { useVideoInfo } from '../contexts/VideoInfo.jsx';
@@ -132,6 +133,31 @@ function SinglePlaylistPage() {
         return new Map(videoInfo?.map(({ name, url }) => [url, name]) ?? []);
     }, [videoInfo]);
 
+    const renameDialogRef = useRef();
+    const handleRenameClick = useCallback(() => {
+        renameDialogRef?.current.showModal();
+    }, []);
+    const handleRename = useCallback(
+        async (event, name) => {
+            const { returnValue } = event.target;
+
+            if (returnValue !== 'cancel') {
+                const res = await fetch(
+                    `http://localhost:9000/playlists/${encodeURIComponent(playlistId)}`,
+                    {
+                        method: 'PATCH',
+                        body: JSON.stringify({ name }),
+                    }
+                );
+
+                if (res.ok) {
+                    await refetchPlaylists();
+                }
+            }
+        },
+        [playlistId, refetchPlaylists]
+    );
+
     if (!videoInfo) {
         return null;
     } else if (playlists && !playlistName) {
@@ -155,13 +181,27 @@ function SinglePlaylistPage() {
                 urlSet={urlSet}
                 onChoose={handleSelectionChange}
             />
+            <YesNoTextDialog
+                ref={renameDialogRef}
+                onClose={handleRename}
+                title={intl.formatMessage({ id: 'renamePlaylistDialog.title' })}
+                placeholder={intl.formatMessage({
+                    id: 'renamePlaylistDialog.placeholder',
+                })}
+                cancelText={intl.formatMessage({
+                    id: 'renamePlaylistDialog.cancelText',
+                })}
+                submitText={intl.formatMessage({
+                    id: 'renamePlaylistDialog.submitText',
+                })}
+            />
             <Top>
                 <NavLink to="/playlist">{'<'}</NavLink>
                 <h1>{playlistName}</h1>
             </Top>
             <div>
                 <div>
-                    <SmallItem>
+                    <SmallItem onClick={handleRenameClick}>
                         {intl.formatMessage({
                             id: 'singlePlaylistPage.rename',
                         })}
