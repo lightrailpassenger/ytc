@@ -51,6 +51,10 @@ const SmallItem = styled(Item)`
     display: inline-block;
 `;
 
+const Empty = styled.p`
+    margin-left: 5px;
+`;
+
 function SinglePlaylistPage() {
     const { playlistId } = useParams();
     const intl = useIntl();
@@ -175,17 +179,25 @@ function SinglePlaylistPage() {
                         </NavLink>
                     </SmallItem>
                 </div>
-                <Reorder.Group axis="y" values={items} onReorder={setItems}>
-                    {items.map((url) => {
-                        const name = videoUrlToNameMap.get(url);
+                {items?.length > 0 ? (
+                    <Reorder.Group axis="y" values={items} onReorder={setItems}>
+                        {items.map((url) => {
+                            const name = videoUrlToNameMap.get(url);
 
-                        return (
-                            <Reorder.Item key={url} value={url}>
-                                <Item>{name}</Item>
-                            </Reorder.Item>
-                        );
-                    })}
-                </Reorder.Group>
+                            return (
+                                <Reorder.Item key={url} value={url}>
+                                    <Item>{name}</Item>
+                                </Reorder.Item>
+                            );
+                        })}
+                    </Reorder.Group>
+                ) : (
+                    <Empty>
+                        {intl.formatMessage({
+                            id: 'singlePlaylistPage.noItem',
+                        })}
+                    </Empty>
+                )}
             </div>
         </div>
     );

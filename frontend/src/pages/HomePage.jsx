@@ -117,7 +117,9 @@ function HomePage({ setLocale }) {
                     </SmallItem>
                     <SmallItem key="playlist">
                         <NavLink to="/playlist">
-                            {intl.formatMessage({ id: 'homePage.playlistButton.text' })}
+                            {intl.formatMessage({
+                                id: 'homePage.playlistButton.text',
+                            })}
                         </NavLink>
                     </SmallItem>
                     <SmallItem key="clean" onClick={handleCleanVideos}>

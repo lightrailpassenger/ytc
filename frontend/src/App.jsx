@@ -101,6 +101,11 @@ function App() {
                         font-family: 'Fira Sans';
                     }
 
+                    dialog {
+                        border: 1px solid #a0937d;
+                        border-radius: 5px;
+                    }
+
                     input,
                     button,
                     h1,
