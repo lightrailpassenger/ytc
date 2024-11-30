@@ -22,7 +22,8 @@ const Top = styled.div`
     }
 `;
 
-const Item = styled.div`
+const Item = styled(NavLink)`
+    display: block;
     font-size: 20px;
     border-radius: 10px;
     margin: 5px;
@@ -30,11 +31,6 @@ const Item = styled.div`
     width: 80%;
     max-width: 640px;
     background-color: white;
-    display: flex;
-`;
-
-const ItemButton = styled(NavLink)`
-    flex: 0 0 auto;
     cursor: pointer;
 `;
 
@@ -123,12 +119,11 @@ function PlaylistPage() {
             </div>
             {playlists?.length > 0 ? (
                 playlists.map((playlist) => (
-                    <Item key={playlist.id}>
-                        <ItemButton
-                            to={`/playlist/${encodeURIComponent(playlist.id)}/edit`}
-                        >
-                            {playlist.name}
-                        </ItemButton>
+                    <Item
+                        key={playlist.id}
+                        to={`/playlist/${encodeURIComponent(playlist.id)}/edit`}
+                    >
+                        {playlist.name}
                     </Item>
                 ))
             ) : (
