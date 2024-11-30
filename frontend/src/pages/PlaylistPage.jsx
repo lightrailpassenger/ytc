@@ -33,15 +33,9 @@ const Item = styled.div`
     display: flex;
 `;
 
-const ItemText = styled.span`
-    flex: 1 1 0;
-    min-width: 0;
-`;
-
 const ItemButton = styled(NavLink)`
     flex: 0 0 auto;
     cursor: pointer;
-    margin-left: 10px;
 `;
 
 const SmallItem = styled(Item)`
@@ -130,16 +124,10 @@ function PlaylistPage() {
             {playlists?.length > 0 ? (
                 playlists.map((playlist) => (
                     <Item key={playlist.id}>
-                        <ItemText>{playlist.name}</ItemText>
                         <ItemButton
                             to={`/playlist/${encodeURIComponent(playlist.id)}/edit`}
                         >
-                            {'🖊️'}
-                        </ItemButton>
-                        <ItemButton
-                            to={`/play/${encodeURIComponent(playlist.id)}/0`}
-                        >
-                            {'➡️'}
+                            {playlist.name}
                         </ItemButton>
                     </Item>
                 ))

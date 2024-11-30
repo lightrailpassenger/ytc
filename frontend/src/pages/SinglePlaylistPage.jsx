@@ -211,13 +211,15 @@ function SinglePlaylistPage() {
                             id: 'singlePlaylistPage.choose',
                         })}
                     </SmallItem>
-                    <SmallItem>
-                        <NavLink
-                            to={`/play/${encodeURIComponent(playlistId)}/0`}
-                        >
-                            {'➡️'}
-                        </NavLink>
-                    </SmallItem>
+                    {Boolean(items?.length) && (
+                        <SmallItem>
+                            <NavLink
+                                to={`/play/${encodeURIComponent(playlistId)}/0`}
+                            >
+                                {'➡️'}
+                            </NavLink>
+                        </SmallItem>
+                    )}
                 </div>
                 {items?.length > 0 ? (
                     <Reorder.Group axis="y" values={items} onReorder={setItems}>

@@ -36,6 +36,7 @@
     "renamePlaylistDialog.cancelText": "Cancel",
     "renamePlaylistDialog.submitText": "Rename",
     "videoSelectionDialog.title": "Select videos",
+    "videoSelectionDialog.filter.placeholder": "Filter",
     "videoSelectionDialog.cancel": "Cancel",
     "videoSelectionDialog.submit": "Submit"
 }

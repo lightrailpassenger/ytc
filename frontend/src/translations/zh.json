@@ -36,6 +36,7 @@
     "renamePlaylistDialog.cancelText": "取消",
     "renamePlaylistDialog.submitText": "重新命名",
     "videoSelectionDialog.title": "選擇影片",
+    "videoSelectionDialog.filter.placeholder": "搜尋",
     "videoSelectionDialog.cancel": "取消",
     "videoSelectionDialog.submit": "完成"
 }

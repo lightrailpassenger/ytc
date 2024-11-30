@@ -13,7 +13,7 @@ import { produce } from 'immer';
 import { useVideoInfo } from '../contexts/VideoInfo.jsx';
 
 const Button = styled.button`
-    margin-right: 5px;
+    margin-left: 5px;
 `;
 
 const Dialog = styled.dialog`
@@ -37,6 +37,13 @@ const Form = styled.form`
 
     overflow: auto;
     flex: 1 1 auto;
+
+    input[type='search'] {
+        margin-left: 5px;
+        margin-top: 5px;
+        width: 70%;
+        font-size: 18px;
+    }
 `;
 
 const List = styled.ol`
@@ -70,6 +77,8 @@ const VideoSelectionDialog = forwardRef((props, ref) => {
         [dialogRef, urlSet]
     );
 
+    const [keyword, setKeyword] = useState('');
+
     return (
         <Dialog
             ref={dialogRef}
@@ -102,9 +111,21 @@ const VideoSelectionDialog = forwardRef((props, ref) => {
                             })}
                         </Button>
                     </div>
+                    <div>
+                        <input
+                            type="search"
+                            value={keyword}
+                            onChange={(event) => {
+                                setKeyword(event.target.value);
+                            }}
+                            placeholder={intl.formatMessage({
+                                id: 'videoSelectionDialog.filter.placeholder',
+                            })}
+                        />
+                    </div>
                     <List>
                         {downloadedList.map(({ url, name }) => {
-                            return (
+                            return !keyword || name.indexOf(keyword) > -1 ? (
                                 <li key={url}>
                                     <input
                                         type="checkbox"
@@ -123,7 +144,7 @@ const VideoSelectionDialog = forwardRef((props, ref) => {
                                     />
                                     <span>{name}</span>
                                 </li>
-                            );
+                            ) : null;
                         })}
                     </List>
                 </Form>
