@@ -140,7 +140,7 @@ function WatchPage({ volume, setVolume }) {
                     to={
                         rawCreatedAt
                             ? '/'
-                            : `/playlist/${encodeURIComponent(playlistId)}`
+                            : `/playlist/${encodeURIComponent(playlistId)}/edit`
                     }
                 >
                     {'<'}
