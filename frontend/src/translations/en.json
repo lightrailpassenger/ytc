@@ -15,6 +15,7 @@
     "homePage.cleanup.close": "Complete",
     "homePage.cleanButton.text": "GC",
     "homePage.createButton.text": "Create",
+    "homePage.playlistButton.text": "Playlist",
     "notFoundPage.title": "Not Found",
     "notFoundPage.head.title": "Not Found",
     "notFoundPage.backToHome": "Home",
