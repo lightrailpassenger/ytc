@@ -1,11 +1,4 @@
-import {
-    useCallback,
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
@@ -117,22 +110,16 @@ function SinglePlaylistPage() {
 
     const [videoInfo] = useVideoInfo();
 
-    const [isDialogOpen, setDialogOpen] = useState(false);
-    const dialogRef = useRef();
-
-    useLayoutEffect(() => {
-        if (isDialogOpen) {
-            dialogRef.current?.showModal();
-        }
-    }, [isDialogOpen]);
+    const videoSelectionDialogRef = useRef();
+    const handleSelectVideos = useCallback(() => {
+        videoSelectionDialogRef.current?.showModal();
+    }, []);
 
     const urlSet = useMemo(() => {
         return new Set(items ?? []);
     }, [items]);
     const handleSelectionChange = useCallback(
         (newUrlSet) => {
-            setDialogOpen(false);
-
             if (newUrlSet !== urlSet) {
                 setItems([...newUrlSet]);
             }
@@ -212,7 +199,7 @@ function SinglePlaylistPage() {
                 </title>
             </Helmet>
             <VideoSelectionDialog
-                ref={dialogRef}
+                ref={videoSelectionDialogRef}
                 urlSet={urlSet}
                 onChoose={handleSelectionChange}
             />
@@ -257,7 +244,7 @@ function SinglePlaylistPage() {
                                 id: 'singlePlaylistPage.rename',
                             })}
                         </SmallItem>
-                        <SmallItem onClick={() => setDialogOpen(true)}>
+                        <SmallItem onClick={handleSelectVideos}>
                             {intl.formatMessage({
                                 id: 'singlePlaylistPage.choose',
                             })}
