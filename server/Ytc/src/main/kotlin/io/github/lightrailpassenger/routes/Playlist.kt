@@ -123,6 +123,27 @@ fun generatePatchPlaylistHandler(
     }
 }
 
+fun generateDeletePlaylistHandler(
+    playlist: Playlist,
+): (request: Request) -> Response {
+    return fun(request: Request): Response {
+        try {
+            val playlistId = request.path("playlistId")
+
+            if (playlistId == null) {
+                return Response(BAD_REQUEST).body(ObjectMapper().writeValueAsString(ErrorResponse("BAD_REQUEST")))
+            }
+
+            playlist.delete(playlistId)
+
+            return Response(NO_CONTENT)
+        } catch (ex: Throwable) {
+            System.err.println(ex)
+            return Response(INTERNAL_SERVER_ERROR).body(ObjectMapper().writeValueAsString(ErrorResponse("INTERNAL_SERVER_ERROR")))
+        }
+    }
+}
+
 data class GetPlaylistItemsResponseBody(
     val urls: List<String>
 )

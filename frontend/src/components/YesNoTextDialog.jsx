@@ -18,6 +18,11 @@ const Dialog = styled.dialog`
             font-size: 18px;
             margin-bottom: 10px;
         }
+
+        > div > input[type='submit']:disabled {
+            cursor: not-allowed;
+            opacity: 0.3;
+        }
     }
 
     div {
@@ -31,7 +36,14 @@ const Dialog = styled.dialog`
 `;
 
 const YesNoTextDialog = forwardRef((props, ref) => {
-    const { title, placeholder, cancelText, submitText, onClose } = props;
+    const {
+        title,
+        placeholder,
+        cancelText,
+        submitText,
+        onClose,
+        checkCanSubmit = (text) => Boolean(text),
+    } = props;
 
     const [inputText, setInputText] = useState('');
 
@@ -69,6 +81,7 @@ const YesNoTextDialog = forwardRef((props, ref) => {
                         formMethod="dialog"
                         type="submit"
                         value={submitText}
+                        disabled={!checkCanSubmit(inputText)}
                     />
                     <button formNoValidate formMethod="dialog" value="cancel">
                         {cancelText}

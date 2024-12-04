@@ -11,6 +11,7 @@ import io.github.lightrailpassenger.routes.generateCleanVideosHandler
 import io.github.lightrailpassenger.routes.generateCreatePlaylistHandler
 import io.github.lightrailpassenger.routes.generateListAllPlaylistsHandler
 import io.github.lightrailpassenger.routes.generatePatchPlaylistHandler
+import io.github.lightrailpassenger.routes.generateDeletePlaylistHandler
 import io.github.lightrailpassenger.routes.generateGetPlaylistItemsHandler
 import io.github.lightrailpassenger.routes.generateSetPlaylistItemsHandler
 import io.github.lightrailpassenger.utils.ensureDbDir
@@ -55,6 +56,7 @@ val cleanVideos = generateCleanVideosHandler(downloadRecord, sqliteFile)
 val createPlaylist = generateCreatePlaylistHandler(playlist)
 val getPlaylists = generateListAllPlaylistsHandler(playlist)
 val patchPlaylist = generatePatchPlaylistHandler(playlist)
+val deletePlaylist = generateDeletePlaylistHandler(playlist)
 val getPlaylistItems = generateGetPlaylistItemsHandler(playlist)
 val setPlaylistItems = generateSetPlaylistItemsHandler(playlist)
 
@@ -69,6 +71,7 @@ val http = routes(
     "/playlists/{playlistId}" bind GET to getPlaylistItems,
     "/playlists/{playlistId}" bind PUT to setPlaylistItems,
     "/playlists/{playlistId}" bind PATCH to patchPlaylist,
+    "/playlists/{playlistId}" bind DELETE to deletePlaylist,
     "/playlists" bind GET to getPlaylists,
     "/playlists" bind POST to createPlaylist
 )

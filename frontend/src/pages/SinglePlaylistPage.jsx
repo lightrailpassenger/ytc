@@ -9,7 +9,7 @@ import {
 
 import { Helmet } from 'react-helmet';
 import { useIntl } from 'react-intl';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 
 import styled from '@emotion/styled';
@@ -38,9 +38,11 @@ const Top = styled.div`
 const Item = styled.div`
     font-size: 20px;
     border-radius: 10px;
+    box-sizing: border-box;
     margin: 5px;
     padding: 10px;
-    width: 80%;
+    max-width: calc(80vw - 10px);
+    width: 100%;
     background-color: white;
     cursor: pointer;
     display: flex;
@@ -54,6 +56,14 @@ const SmallItem = styled(Item)`
 
 const Empty = styled.p`
     margin-left: 5px;
+`;
+
+const TwoSide = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 80vw;
+    width: 100%;
 `;
 
 function SinglePlaylistPage() {
@@ -158,6 +168,29 @@ function SinglePlaylistPage() {
         [playlistId, refetchPlaylists]
     );
 
+    const deleteDialogRef = useRef();
+    const navigate = useNavigate();
+    const handleDeleteButtonClick = useCallback(() => {
+        deleteDialogRef.current?.showModal();
+    }, []);
+    const handleDeletePlaylist = useCallback(
+        async (event) => {
+            const { returnValue } = event.target;
+
+            if (returnValue !== 'cancel') {
+                const res = await fetch(
+                    `http://localhost:9000/playlists/${playlistId}`,
+                    { method: 'delete' }
+                );
+
+                if (res.ok) {
+                    navigate('/playlist');
+                }
+            }
+        },
+        [navigate, playlistId]
+    );
+
     if (!videoInfo) {
         return null;
     } else if (playlists && !playlistName) {
@@ -165,6 +198,8 @@ function SinglePlaylistPage() {
     } else if (!playlistName || !items) {
         return null;
     }
+
+    const isEmpty = items?.length > 0;
 
     return (
         <div>
@@ -195,23 +230,40 @@ function SinglePlaylistPage() {
                     id: 'renamePlaylistDialog.submitText',
                 })}
             />
+            <YesNoTextDialog
+                ref={deleteDialogRef}
+                onClose={handleDeletePlaylist}
+                title={intl.formatMessage({ id: 'deletePlaylistDialog.title' })}
+                placeholder={intl.formatMessage({
+                    id: 'deletePlaylistDialog.placeholder',
+                })}
+                cancelText={intl.formatMessage({
+                    id: 'deletePlaylistDialog.cancelText',
+                })}
+                submitText={intl.formatMessage({
+                    id: 'deletePlaylistDialog.submitText',
+                })}
+                checkCanSubmit={(text) => text === playlistName}
+            />
             <Top>
                 <NavLink to="/playlist">{'<'}</NavLink>
                 <h1>{playlistName}</h1>
             </Top>
             <div>
-                <div>
-                    <SmallItem onClick={handleRenameClick}>
-                        {intl.formatMessage({
-                            id: 'singlePlaylistPage.rename',
-                        })}
-                    </SmallItem>
-                    <SmallItem onClick={() => setDialogOpen(true)}>
-                        {intl.formatMessage({
-                            id: 'singlePlaylistPage.choose',
-                        })}
-                    </SmallItem>
-                    {Boolean(items?.length) && (
+                <TwoSide>
+                    <div>
+                        <SmallItem onClick={handleRenameClick}>
+                            {intl.formatMessage({
+                                id: 'singlePlaylistPage.rename',
+                            })}
+                        </SmallItem>
+                        <SmallItem onClick={() => setDialogOpen(true)}>
+                            {intl.formatMessage({
+                                id: 'singlePlaylistPage.choose',
+                            })}
+                        </SmallItem>
+                    </div>
+                    {isEmpty ? (
                         <SmallItem>
                             <NavLink
                                 to={`/play/${encodeURIComponent(playlistId)}/0`}
@@ -219,9 +271,13 @@ function SinglePlaylistPage() {
                                 {'➡️'}
                             </NavLink>
                         </SmallItem>
+                    ) : (
+                        <SmallItem onClick={handleDeleteButtonClick}>
+                            {'🗑️'}
+                        </SmallItem>
                     )}
-                </div>
-                {items?.length > 0 ? (
+                </TwoSide>
+                {isEmpty ? (
                     <Reorder.Group axis="y" values={items} onReorder={setItems}>
                         {items.map((url) => {
                             const name = videoUrlToNameMap.get(url);
