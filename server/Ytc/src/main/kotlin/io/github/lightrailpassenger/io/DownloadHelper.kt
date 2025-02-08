@@ -6,6 +6,8 @@ class DownloadHelper {
             "yt-dlp",
             "-f",
             "bestvideo+bestaudio",
+            "--merge-output-format",
+            "mp4",
             "-k",
             "-P",
             location,
