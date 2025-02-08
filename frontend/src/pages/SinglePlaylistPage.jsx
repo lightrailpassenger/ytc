@@ -39,6 +39,23 @@ const Item = styled.div`
     background-color: white;
     cursor: pointer;
     display: flex;
+
+    > a {
+        width: 100%;
+    }
+`;
+
+const MovingItem = styled(Item)`
+    @keyframes move {
+        0% {
+            transform: translate(-2px, -2px);
+        }
+        100% {
+            transform: translate(2px, 2px);
+        }
+    }
+
+    animation: 0.25s infinite alternate move;
 `;
 
 const SmallItem = styled(Item)`
@@ -57,6 +74,16 @@ const TwoSide = styled.div`
     justify-content: space-between;
     max-width: 80vw;
     width: 100%;
+`;
+
+const ButtonDiv = styled.div`
+    height: 55px;
+`;
+
+const Container = styled.div`
+    ul {
+        margin-top: 0;
+    }
 `;
 
 function SinglePlaylistPage() {
@@ -178,6 +205,20 @@ function SinglePlaylistPage() {
         [navigate, playlistId]
     );
 
+    const [isEditing, setEditing] = useState(false);
+    const firstReorderItemRef = useRef();
+
+    const handleReorderItemMouseUp = useCallback((event) => {
+        const animations = event.target.getAnimations();
+        const { startTime } = animations[0];
+
+        Array.from(document.querySelectorAll('ul .reorder')).forEach((el) => {
+            const [animation] = el.getAnimations();
+
+            animation.startTime = startTime;
+        });
+    }, []);
+
     if (!videoInfo) {
         return null;
     } else if (playlists && !playlistName) {
@@ -186,10 +227,10 @@ function SinglePlaylistPage() {
         return null;
     }
 
-    const isEmpty = items?.length > 0;
+    const hasItem = items?.length > 0;
 
     return (
-        <div>
+        <Container>
             <Helmet>
                 <title>
                     {intl.formatMessage(
@@ -250,32 +291,63 @@ function SinglePlaylistPage() {
                             })}
                         </SmallItem>
                     </div>
-                    {isEmpty ? (
-                        <SmallItem>
-                            <NavLink
-                                to={`/play/${encodeURIComponent(playlistId)}/0`}
-                            >
-                                {'➡️'}
-                            </NavLink>
-                        </SmallItem>
+                    {hasItem ? (
+                        <ButtonDiv>
+                            <SmallItem onClick={() => setEditing((e) => !e)}>
+                                {isEditing ? '✔️' : '🖊️'}
+                            </SmallItem>
+                            <SmallItem>
+                                <NavLink
+                                    to={`/play/${encodeURIComponent(playlistId)}/0`}
+                                >
+                                    {'➡️'}
+                                </NavLink>
+                            </SmallItem>
+                        </ButtonDiv>
                     ) : (
                         <SmallItem onClick={handleDeleteButtonClick}>
                             {'🗑️'}
                         </SmallItem>
                     )}
                 </TwoSide>
-                {isEmpty ? (
-                    <Reorder.Group axis="y" values={items} onReorder={setItems}>
-                        {items.map((url) => {
-                            const name = videoUrlToNameMap.get(url);
+                {hasItem ? (
+                    isEditing ? (
+                        <Reorder.Group
+                            axis="y"
+                            values={items}
+                            onReorder={setItems}
+                        >
+                            {items.map((url, i) => {
+                                const name = videoUrlToNameMap.get(url);
 
-                            return (
-                                <Reorder.Item key={url} value={url}>
-                                    <Item>{name}</Item>
-                                </Reorder.Item>
-                            );
-                        })}
-                    </Reorder.Group>
+                                return (
+                                    <Reorder.Item key={url} value={url}>
+                                        <MovingItem
+                                            className="reorder"
+                                            onMouseUp={handleReorderItemMouseUp}
+                                            ref={
+                                                i === 0
+                                                    ? firstReorderItemRef
+                                                    : undefined
+                                            }
+                                        >
+                                            {name}
+                                        </MovingItem>
+                                    </Reorder.Item>
+                                );
+                            })}
+                        </Reorder.Group>
+                    ) : (
+                        items.map((url, i) => (
+                            <Item key={url}>
+                                <NavLink
+                                    to={`/play/${encodeURIComponent(playlistId)}/${i}`}
+                                >
+                                    {videoUrlToNameMap.get(url)}
+                                </NavLink>
+                            </Item>
+                        ))
+                    )
                 ) : (
                     <Empty>
                         {intl.formatMessage({
@@ -284,7 +356,7 @@ function SinglePlaylistPage() {
                     </Empty>
                 )}
             </div>
-        </div>
+        </Container>
     );
 }
 
